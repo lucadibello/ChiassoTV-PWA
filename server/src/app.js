@@ -14,7 +14,10 @@ app.use(cors());
 
 // Add API posts
 const episode = require('./routes/api/episode.js');
-app.use('/api/episode', episode)
+const login = require('./routes/api/login');
+
+app.use('/api/episode', episode);
+app.use('/api/login', login);
 
 // Get available port or 5000
 const port = process.env.PORT || 5000;
