@@ -12,9 +12,15 @@ const app = express();
 
 // Set middlewares
 app.use(bodyParser.json());
+
 app.use(morgan("combined"));
 app.use(cors());
 
+// Set api routes
+const login = require('./routes/api/login')
+app.use('/api/login', login)
+
+// Sync database
 sequelize.sync()
     .then(() => {
         // Start app
