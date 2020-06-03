@@ -2,10 +2,13 @@
   <div>
       <h1>Effettua il login</h1>
 
-      <input type="email" v-model="email" name="email" placeholder="Email">
+      <input type="username" v-model="username" name="username" placeholder="Username">
       <input type="password" v-model="password" name="password" placeholder="Password">
       <br>
       <button @click="login">Login</button>
+
+      <div class="error" v-html="error"/>
+      <br>
   </div>
 </template>
 
@@ -16,24 +19,29 @@ export default {
   name: 'login',
   data () {
     return {
-      email: '',
-      password: ''
+      username: '',
+      password: '',
+      error: ''
     }
   },
   methods: {
-    login () {
-      AuthenticationService.login({
-        'email': this.email,
-        'password': this.password
-      }).then((response) => {
-        console.log(response)
-      })
+    async login () {
+      try {
+        await AuthenticationService.login({
+          'username': this.username,
+          'password': this.password
+        })
+      } catch (error) {
+        this.error = error.response.data.error
+      }
     }
   }
 }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style>
-
-</style>
+<style scoped>
+.error{
+  color: red;
+}
+</style>>
