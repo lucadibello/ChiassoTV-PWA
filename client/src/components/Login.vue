@@ -1,15 +1,46 @@
 <template>
-  <div>
-      <h1>Effettua il login</h1>
+  <b-container>
+    <b-alert
+      :show="dismissCountDown"
+      dismissible
+      variant="danger"
+      @dismissed="dismissCountDown=0"
+      @dismiss-count-down="countDownChanged">
 
-      <input type="username" v-model="username" name="username" placeholder="Username">
-      <input type="password" v-model="password" name="password" placeholder="Password">
-      <br>
-      <button @click="login">Login</button>
+      <div v-html="errors"></div>
 
-      <div class="error" v-html="error"/>
-      <br>
-  </div>
+      <b-progress
+        variant="danger"
+        :max="dismissSecs"
+        :value="dismissCountDown"
+        height="4px"/>
+    </b-alert>
+
+    <b-form @submit="login">
+      <h1>Accedi</h1>
+      <b-form-group
+        id="input-group-1">
+        
+        <b-form-input
+          id="email-input"
+          v-model="form.username"
+          type="text"
+          required
+          placeholder="Enter email"/>
+
+
+        <b-form-input
+          class="mt-3"
+          id="password-input"
+          v-model="form.password"
+          type="password"
+          required
+          placeholder="Enter password"/>
+      </b-form-group>
+
+      <b-button type="submit" variant="primary">Login</b-button>
+    </b-form>
+  </b-container>
 </template>
 
 <script>
@@ -19,21 +50,45 @@ export default {
   name: 'login',
   data () {
     return {
-      username: '',
-      password: '',
-      error: ''
+      form: {
+        username: '',
+        password: ''
+      },
+      errors: '',
+      dismissSecs: 10,
+      dismissCountDown: 0,
+      showDismissibleAlert: false
     }
   },
   methods: {
     async login () {
       try {
-        await AuthenticationService.login({
-          'username': this.username,
-          'password': this.password
+        let response = await AuthenticationService.login({
+          'username': this.form.username,
+          'password': this.form.password
         })
+
+        // Hide alert
+        this.hideAlert()
+
+        // Save token inside localStore
+        localStorage.setItem('token', response.data.token)
       } catch (error) {
-        this.error = error.response.data.error
+        // add error message inside alert
+        this.errors = error.response.data.error
+
+        // Show alert box
+        this.showAlert()
       }
+    },
+    countDownChanged (dismissCountDown) {
+      this.dismissCountDown = dismissCountDown
+    },
+    showAlert () {
+      this.dismissCountDown = this.dismissSecs
+    },
+    hideAlert () {
+      this.dismissCountDown = 0
     }
   }
 }
