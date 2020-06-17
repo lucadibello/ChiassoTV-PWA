@@ -1,10 +1,22 @@
 
 const {User} = require('../models')
+const bcrypt = require('bcrypt')
 
 module.exports = {
     create (req, res) {
-        User.findOrCreate(req.body.username).then((result) => {
-            let user = result[0], isCreated = result[1]
+        // Hash password
+        let hashed = bcrypt.hashSync(req.body.password, 12);
+
+        User.findOrCreate({
+            defaults: { 
+                username: req.body.username,
+                password: hashed,
+                name: req.body.name,
+                surname: req.body.surname
+            },
+            where: { username: req.body.username }
+          }).then(result => {
+            let isCreated = result[1]
 
             if(isCreated){
                 // User created
@@ -14,7 +26,24 @@ module.exports = {
                 // User already exists
                 res.status(400).send({message: "User already exists"})
             }
+          });
+    },
+    delete (req, res) {
+        User.destroy({
+            where: {
+                username: req.params.username
+            }
+        }).then((result) => {
+            if(result){
+                res.send({
+                    message: "User deleted successfully"
+                })
+            }
+            else{
+                res.status(400).send({
+                    error: "The specified user does not exists (username: "+req.params.username+")"
+                })
+            }
         })
-
     }
 }

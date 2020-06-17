@@ -1,8 +1,10 @@
 const Joi = require('@hapi/joi')
 
 module.exports = {
-    login (req, res, next) {
+    create (req, res, next) {
         
+        const _info_regex = new RegExp("^[a-zA-Z]+(([',. -][a-zA-Z ])?[a-zA-Z]*)*$");
+
         // Create validation schema
         const schema = Joi.object({
             username: Joi.string().min(3).max(255)
@@ -10,6 +12,8 @@ module.exports = {
                 .required(),
 
             password: Joi.string().alphanum().required(),
+            name: Joi.string().min(3).max(255).pattern(_info_regex).required(),
+            surname: Joi.string().min(3).max(255).pattern(_info_regex).required(),
         });
 
         // Validate data
