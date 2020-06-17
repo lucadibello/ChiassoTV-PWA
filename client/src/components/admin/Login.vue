@@ -1,5 +1,7 @@
 <template>
   <b-container>
+    <b-alert :show="logged" variant="success">Accesso eseguito correttamente</b-alert>
+
     <b-alert
       :show="dismissCountDown"
       dismissible
@@ -57,11 +59,13 @@ export default {
       errors: '',
       dismissSecs: 10,
       dismissCountDown: 0,
-      showDismissibleAlert: false
+      showDismissibleAlert: false,
+      logged: false
     }
   },
   methods: {
     async login () {
+      console.log('Login request detected')
       try {
         let response = await AuthenticationService.login({
           'username': this.form.username,
@@ -73,12 +77,18 @@ export default {
 
         // Save token inside localStore
         localStorage.setItem('token', response.data.token)
+
+        // Show alert box
+        this.logged = true
       } catch (error) {
         // add error message inside alert
         this.errors = error.response.data.error
 
         // Show alert box
         this.showAlert()
+
+        // Hide login alert
+        this.logged = false
       }
     },
     countDownChanged (dismissCountDown) {

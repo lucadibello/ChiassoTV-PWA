@@ -27,7 +27,6 @@ body {
 
 main {
   text-align: center;
-  margin-top: 40px;
 }
 
 header {
