@@ -1,20 +1,20 @@
 // Require modules
 const express = require('express');
 const episode = require("../../models/Episode");
-const token = require('../jwt');
+const JwtHelper = require('../jwt');
 
 // Get router
 const router = express.Router()
 
 // Return all episodes
-router.get('/', token, (req, res) => {
+router.get('/', JwtHelper.authenticateToken, (req, res) => {
     episode.findAll().then((data) => {
         res.send(data);
     });
 });
 
 // Return specific episode
-router.get('/:categoryId/:episodeId', token,(req, res) => {
+router.get('/:categoryId/:episodeId', JwtHelper.authenticateToken,(req, res) => {
     episode.findAll({
         where: {
             episode_number: req.params.categoryId,
