@@ -20,39 +20,20 @@
 
     <!-- Add users -->
     <div class="d-block text-center mb-3 mt-1">
-        <h3>Crea utente</h3>
-        <small>Tramite il modulo sottostante è possibile l'aggiunta di nuovi utenti amministratori al sistema</small>
-        <b-form id='edit-modal-form' @submit="addUser">
+        <h3>Crea serie</h3>
+        <small>Tramite il modulo sottostante è possibile l'aggiunta di nuove serie all'interno della piattaforma</small>
+        <b-form id='add-serie' @submit="addSerie">
           <b-row>
             <b-col>
               <!-- Nome -->
               <b-form-input
-                v-model="add.name"
+                v-model="series.name"
                 type="text"
                 required
                 placeholder="Nome"
               ></b-form-input>
             </b-col>
-            <b-col>
-              <!-- Cognome -->
-              <b-form-input
-                v-model="add.surname"
-                type="text"
-                required
-                placeholder="Cognome"
-              ></b-form-input>
-            </b-col>
           </b-row>
-
-          <!-- Username -->
-          <b-input-group prepend="@" class="mt-3">
-              <b-form-input
-                v-model="add.username"
-                type="text"
-                required
-                placeholder="Username"
-              ></b-form-input>
-          </b-input-group>
 
           <b-button type='submit' class="mt-2" variant="outline-success" block>Aggiungi</b-button>
         </b-form>
@@ -61,12 +42,15 @@
     <hr>
 
     <div class="d-block text-center mb-3 mt-1">
-      <h3>Lista utenti</h3>
-      <small>Lista di tutti gli utenti amministratori presenti nel sistema</small>
+      <h3>Lista serie</h3>
+      <small>
+        Lista di tutte le serie presenti nel sistema. È possibile modificare il nome e gli episodi
+        presenti in ogni serie cliccando sul pulsante: <b-col id="btn-example" lg="2" class="pb-2"><b-button size="sm" disabled>Mostra azioni</b-button></b-col>
+      </small>
           
 
       <!-- User table -->
-      <b-table id='user-table' striped hover :items="items" :fields="fields">
+      <b-table id='user-table' class="mt-3" striped hover :items="items" :fields="fields">
         <template v-slot:cell(actions)="{ item }">
           <b-btn @click="toggleActions(item)">
             {{ button_text }}
@@ -87,36 +71,13 @@
         <h3>Modifica utente</h3>
 
         <b-form id='edit-modal-form' @submit="onSubmit" @reset="onReset">
-          <b-row>
-            <b-col>
-              <!-- Nome -->
-              <b-form-input
-                v-model="modal.name"
-                type="text"
-                required
-                placeholder="Nome"
-              ></b-form-input>
-            </b-col>
-            <b-col>
-              <!-- Cognome -->
-              <b-form-input
-                v-model="modal.surname"
-                type="text"
-                required
-                placeholder="Cognome"
-              ></b-form-input>
-            </b-col>
-          </b-row>
-
-          <!-- Username -->
-          <b-input-group prepend="@" class="mt-3">
-              <b-form-input
-                v-model="modal.username"
-                type="text"
-                required
-                placeholder="Username"
-              ></b-form-input>
-          </b-input-group>
+            <!-- Nome -->
+            <b-form-input
+              v-model="modal.name"
+              type="text"
+              required
+              placeholder="Nome"
+            ></b-form-input>
 
           <b-button type='reset' class="mt-3" variant="success" block @click="toggleModal">Annulla</b-button>
           <b-button type='submit' class="mt-2" variant="outline-danger" block>Applica</b-button>
@@ -129,7 +90,7 @@
 
 <script>
 import Breadcumb from '@/components/global/Breadcumb'
-import UserService from '@/services/UserService'
+import SeriesService from '@/services/SeriesService'
 
 export default {
   components: {
@@ -148,24 +109,18 @@ export default {
       dismissSecs: 5,
       dismissCountDown: 0,
       showDismissibleAlert: false,
+      series: {
+        name: ''
+      },
       modal: {
-        username: '',
-        name: '',
-        surname: ''
-      },
-      add: {
-        username: '',
-        name: '',
-        surname: '',
-        password: 'temp'
-      },
-      _default_data: {}
+        name: ''
+      }
     }
   },
   methods: {
-    async fillTable () {
+    fillTable () {
       // Send request to User API
-      await UserService.get().then((result) => {
+      SeriesService.get().then((result) => {
         // Got response
         console.log(result)
         this.items = result.data
@@ -175,8 +130,8 @@ export default {
         return []
       })
     },
-    deleteUser (user) {
-      UserService.delete(user.username).then((result) => {
+    deleteSerie (user) {
+      SeriesService.delete(user.username).then((result) => {
         this.notification = 'success'
         this.message = 'Utente eliminato correttamente'
         this.showAlert()
@@ -217,34 +172,12 @@ export default {
       // Set default data
       this._default_data = item
     },
-    onSubmit (e) {
-      e.preventDefault()
-      // Send data to APIs
-      UserService.edit(this.modal, this._default_data.username).then((result) => {
-        this.message = 'Utente modificato correttamente'
-        this.showAlert()
-
-        // Reload table
-        this.fillTable()
-      }).catch(function (err) {
-        alert(err)
-      }).then(() => {
-        // Toggle modal state
-        this.$refs['edit-modal'].toggle('edit-button')
-      })
-    },
-    onReset () {
-      console.log('Resetting form')
-      this.modal.username = ''
-      this.modal.name = ''
-      this.modal.surname = ''
-    },
-    addUser (e) {
+    addSerie (e) {
       // Prevent default event execution
       e.preventDefault()
 
       // Send API request
-      UserService.create(this.add).then((result) => {
+      SeriesService.create(this.add).then((result) => {
         this.message = 'Hai creato correttamente l\'utente ' + this.add.username
 
         // Show notification
@@ -267,6 +200,14 @@ export default {
         this.add.name = ''
         this.add.surname = ''
       })
+    },
+    onReset () {
+      // Reset modal values
+      this.modal.name = ''
+    },
+    onSubmit (e) {
+      // Prevent default event execution
+      e.preventDefault()
     }
   },
   created () {
@@ -275,3 +216,10 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+#btn-example {
+  display: inline;
+  vertical-align: middle;
+}
+</style>

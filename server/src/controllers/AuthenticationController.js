@@ -25,7 +25,7 @@ module.exports = {
                         const jwt_token = jwt.sign({ username: req.body.username}, {key: config.jwt.private_key, passphrase: config.jwt.passphrase},
                         {
                             algorithm:"RS256",
-                            expiresIn: '30m'
+                            expiresIn: '2h'
                         });
                         
                         // Send response

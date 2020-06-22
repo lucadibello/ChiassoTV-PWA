@@ -3,6 +3,11 @@ const {User} = require('../models')
 const bcrypt = require('bcrypt')
 
 module.exports = {
+    get (req, res) {
+        User.findAll({attributes: ['username', 'name', 'surname']}).then((users) => {
+            res.send(users)
+        })
+    },
     create (req, res) {
         // Hash password
         let hashed = bcrypt.hashSync(req.body.password, 12);
@@ -37,6 +42,27 @@ module.exports = {
             if(result){
                 res.send({
                     message: "User deleted successfully"
+                })
+            }
+            else{
+                res.status(400).send({
+                    error: "The specified user does not exists (username: "+req.params.username+")"
+                })
+            }
+        })
+    },
+    edit (req, res) {
+        User.update(
+            { 
+                username: req.body.username,
+                name: req.body.name,
+                surname: req.body.surname
+            },
+            { where: { username: req.params.username }}
+        ).then((result) => {
+            if(result){
+                res.send({
+                    message: "User information updated successfully"
                 })
             }
             else{

@@ -25,10 +25,6 @@ body {
   color: #2c3e50;
 }
 
-main {
-  text-align: center;
-}
-
 header {
   margin: 0;
   height: 56px;

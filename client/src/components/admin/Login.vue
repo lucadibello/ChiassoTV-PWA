@@ -18,7 +18,7 @@
         height="4px"/>
     </b-alert>
 
-    <b-form @submit="login">
+    <b-form @submit.prevent="login">
       <h1>Accedi</h1>
       <b-form-group
         id="input-group-1">
@@ -65,31 +65,36 @@ export default {
   },
   methods: {
     async login () {
-      console.log('Login request detected')
-      try {
-        let response = await AuthenticationService.login({
-          'username': this.form.username,
-          'password': this.form.password
-        })
-
+      AuthenticationService.login({
+        'username': this.form.username,
+        'password': this.form.password
+      }).then((result) => {
         // Hide alert
         this.hideAlert()
 
         // Save token inside localStore
-        localStorage.setItem('token', response.data.token)
+        AuthenticationService.setToken(result.data.token)
 
         // Show alert box
         this.logged = true
-      } catch (error) {
-        // add error message inside alert
-        this.errors = error.response.data.error
 
-        // Show alert box
-        this.showAlert()
+        // Redirect to admin panel
+        this.$router.push('/admin')
+      }).catch((err) => {
+        if (err.response) {
+          console.log(err.response)
+          // add error message inside alert
+          this.errors = err.response.data.error
 
-        // Hide login alert
-        this.logged = false
-      }
+          // Show alert box
+          this.showAlert()
+
+          // Hide login alert
+          this.logged = false
+        } else {
+          alert(err.message)
+        }
+      })
     },
     countDownChanged (dismissCountDown) {
       this.dismissCountDown = dismissCountDown
