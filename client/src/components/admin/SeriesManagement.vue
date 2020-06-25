@@ -22,8 +22,8 @@
     <div class="d-block text-center mb-3 mt-1">
         <h3>Crea serie</h3>
         <small>Tramite il modulo sottostante è possibile l'aggiunta di nuove serie all'interno della piattaforma</small>
-        <b-form id='add-serie' @submit="addSerie">
-          <b-row>
+        <b-form id='add-serie' @submit="addSerie" enctype="multipart/form-data">
+          <b-row class="mb-2">
             <b-col>
               <!-- Nome -->
               <b-form-input
@@ -35,6 +35,55 @@
             </b-col>
           </b-row>
 
+          <div class="mb-2">
+              <b-form-textarea
+                v-model="series.description"
+                placeholder="Descrizione"
+                rows="3"
+                max-rows="6"
+              ></b-form-textarea>
+          </div>
+
+          <!-- Choose input type (upload or normal image) -->
+          <b-form-checkbox v-model="isUploading" switch class="mb-2">
+            <b>Scegli immagine </b>
+              /
+            <b>Carica immagine</b>
+          </b-form-checkbox>
+
+          <transition name="slide-fade">
+            <div v-if="isUploading==true">
+              <!-- Img input -->
+              <div class="mb-4">
+                <b-form-file
+                  class="mb-2"
+                  v-model="series.file"
+                  :state="Boolean(series.file)"
+                  accept=".jpg, .png, .gif"
+                  placeholder="Scegli una copertina da caricare oppure trascinala qui"
+                  drop-placeholder="Trascina il file qui..."
+                  :file-name-formatter="name_formatter"
+                ></b-form-file>
+                
+                <transition name="slide-fade">
+                  <b-button id='remove-image-banner' class="mb-4" @click="series.file = null" v-if='Boolean(series.file)'>Rimuovi immagine scelta</b-button>
+                </transition>
+              </div>
+            </div>
+            <div v-else>
+              <small> Seleziona una copertina tramite il menu a tendina </small>
+              <b-form-select v-model='selectedBanner' :options="availableBanners"></b-form-select>
+              <div class="float-right" v-if="this.selectedBanner !== ''">
+                <a 
+                  id='banner-showcase-button' 
+                  @click="triggerBannerShowcase(selectedBanner)"
+                  >visualizza anteprima copertina..
+                </a>
+              </div>
+            </div>
+          </transition>
+
+          <!-- Submit button -->
           <b-button type='submit' class="mt-2" variant="outline-success" block>Aggiungi</b-button>
         </b-form>
     </div>
@@ -66,23 +115,12 @@
     </div>
 
     <!-- Edit modal -->
-    <b-modal ref="edit-modal" hide-footer title="Using Component Methods">
+    <b-modal ref="banner-showcase-modal" hide-footer>
       <div class="d-block text-center">
-        <h3>Modifica utente</h3>
-
-        <b-form id='edit-modal-form' @submit="onSubmit" @reset="onReset">
-            <!-- Nome -->
-            <b-form-input
-              v-model="modal.name"
-              type="text"
-              required
-              placeholder="Nome"
-            ></b-form-input>
-
-          <b-button type='reset' class="mt-3" variant="success" block @click="toggleModal">Annulla</b-button>
-          <b-button type='submit' class="mt-2" variant="outline-danger" block>Applica</b-button>
-        </b-form>
+        <h3>Anteprima copertina</h3>
       </div>
+      <!-- Banner -->
+      <img alt="Banner showcase" v-bind:src="this.modal.banner" :fluid='true' />
     </b-modal>
   </b-container>
 </template>
@@ -91,6 +129,7 @@
 <script>
 import Breadcumb from '@/components/global/Breadcumb'
 import SeriesService from '@/services/SeriesService'
+import BannerService from '@/services/BannerService'
 
 export default {
   components: {
@@ -99,6 +138,7 @@ export default {
   data () {
     return {
       items: [],
+      availableBanners: [],
       fields: ['username', 'name', 'surname', {
         key: 'actions',
         label: ''
@@ -109,11 +149,17 @@ export default {
       dismissSecs: 5,
       dismissCountDown: 0,
       showDismissibleAlert: false,
+      isUploading: true,
+      selectedBanner: null,
       series: {
-        name: ''
+        name: '',
+        file: null,
+        description: ''
       },
       modal: {
-        name: ''
+        name: '',
+        file: null,
+        banner: ''
       }
     }
   },
@@ -122,12 +168,48 @@ export default {
       // Send request to User API
       SeriesService.get().then((result) => {
         // Got response
-        console.log(result)
         this.items = result.data
       }).catch((err) => {
         // Error found
         console.log(err)
-        return []
+      })
+    },
+    async uploadImage () {
+      // Set form data
+      const formData = new FormData()
+      formData.set('banner', this.series.file, this.series.file.name)
+      formData.set('name', this.series.name)
+
+      // Upload image
+      let result = await BannerService.upload(formData).then((result) => {
+        // Return uploaded file infos
+        return result.data.file
+      }).catch((err) => {
+        if (err.response) {
+          // Set alert message
+          this.message = err.response.data.error
+
+          // Set notification type
+          this.notification = 'danger'
+
+          // Show alert
+          this.showAlert()
+        } else {
+          alert(err)
+        }
+      })
+
+      return result
+    },
+    fillBannerSelector () {
+      // Send request to User API
+      BannerService.get().then((result) => {
+        // Got response
+        console.log('Found data:', result)
+        this.availableBanners = result.data.banners
+      }).catch((err) => {
+        // Error found
+        alert(err)
       })
     },
     deleteSerie (user) {
@@ -160,59 +242,61 @@ export default {
     hideAlert () {
       this.dismissCountDown = 0
     },
-    toggleModal (item) {
+    async addSerie (e) {
+      // Prevent default event execution
+      e.preventDefault()
+
+      // Create formData object
+      const formData = new FormData()
+
+      // Upload image (if selected)
+      if (this.series.file) {
+        // Wait for image upload on the server
+        let uploadedFile = await this.uploadImage()
+        // Append filename
+        formData.append('banner', uploadedFile.originalname)
+      } else {
+        // Use image path -> Append filename
+        console.log('Empty')
+      }
+
+      console.log('Form data: ', formData)
+    },
+    name_formatter () {
+      if (this.series.file) {
+        // Re-Format name
+        let name = this.series.file.name.replace(/\s+/g, '-').toLowerCase()
+
+        // Set new file name
+        Object.defineProperty(this.series.file, 'name', {
+          writable: true,
+          value: name
+        })
+
+        // Return new file name
+        return name
+      }
+    },
+    triggerBannerShowcase (img) {
+      // Build URL
+      let link = 'http://localhost:5000/series/' + img
+
+      // Show modal
+      console.warn('SHOWCASE MODAL WIP')
+
       // Toggle modal state
-      this.$refs['edit-modal'].toggle('edit-button')
+      this.$refs['banner-showcase-modal'].toggle('edit-button')
 
-      // Set data
-      this.modal.username = item.username
-      this.modal.name = item.name
-      this.modal.surname = item.surname
-
-      // Set default data
-      this._default_data = item
-    },
-    addSerie (e) {
-      // Prevent default event execution
-      e.preventDefault()
-
-      // Send API request
-      SeriesService.create(this.add).then((result) => {
-        this.message = 'Hai creato correttamente l\'utente ' + this.add.username
-
-        // Show notification
-        this.showAlert()
-
-        // Reload table
-        this.fillTable()
-      }).catch(function (err) {
-        console.log(err)
-        if (err.response) {
-          // Request made and server responded
-          console.log(err.response.data)
-          console.log(err.response.status)
-          console.log(err.response.headers)
-        } else {
-          alert(err)
-        }
-      }).then(() => {
-        this.add.username = ''
-        this.add.name = ''
-        this.add.surname = ''
-      })
-    },
-    onReset () {
-      // Reset modal values
-      this.modal.name = ''
-    },
-    onSubmit (e) {
-      // Prevent default event execution
-      e.preventDefault()
+      // Set full image
+      this.modal.banner = link
     }
   },
   created () {
     // On load fill table with user infos
     this.fillTable()
+
+    // Load banners
+    this.fillBannerSelector()
   }
 }
 </script>
@@ -221,5 +305,30 @@ export default {
 #btn-example {
   display: inline;
   vertical-align: middle;
+}
+#remove-image-banner {
+  float: left;
+}
+
+/* Enter and leave animations can use different */
+/* durations and timing functions.              */
+.slide-fade-enter-active {
+  transition: all .8s ease;
+}
+.slide-fade-leave-active {
+  transition: all 2s cubic-bezier(1.0, 0.5, 0.8, 1.0);
+}
+.slide-fade-enter, .slide-fade-leave-to
+/* .slide-fade-leave-active below version 2.1.8 */ {
+  transform: translateX(10px);
+  opacity: 0;
+}
+#banner-showcase {
+  max-height: 30vh;
+}
+#banner-showcase-button {
+  cursor:pointer;
+  color:blue;
+  text-decoration:underline;
 }
 </style>
