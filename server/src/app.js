@@ -16,6 +16,9 @@ app.use(bodyParser.json());
 app.use(morgan("combined"));
 app.use(cors());
 
+// Set img directories
+app.use('/series', express.static(config.assets.series));
+
 // Set api routes
 const login = require('./routes/api/login')
 app.use('/api/login', login)
@@ -25,6 +28,12 @@ app.use('/api/user', user)
 
 const episode = require('./routes/api/episode')
 app.use('/api/episode', episode)
+
+const series = require('./routes/api/series')
+app.use('/api/series', series)
+
+const banners = require('./routes/api/banners')
+app.use('/api/banners', banners)
 
 
 // Sync database

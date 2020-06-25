@@ -52,7 +52,7 @@ module.exports = {
         })
     },
     edit (req, res) {
-        User.update(
+        Serie.update(
             { 
                 username: req.body.username,
                 name: req.body.name,

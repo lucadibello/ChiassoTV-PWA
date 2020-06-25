@@ -16,5 +16,8 @@ module.exports = {
         private_key: process.env.JWT_PRIVATE_KEY || fs.readFileSync(path.resolve(__dirname, 'private.pem')),
         public_key: process.env.JWT_PUBLIC_KEY || fs.readFileSync(path.resolve(__dirname, 'public.pem')),
         passphrase: process.env.JWT_PASSPHRASE || 'Chiassotv&1'
+    },
+    assets: {
+        series: process.env.ASSETS_SERIES || path.resolve(__dirname, '..', '..', 'assets/series')
     }
 }
