@@ -12,7 +12,7 @@
       <div v-html="message"></div>
 
       <b-progress
-        variant="success"
+        :variant="notification"
         :max="dismissSecs"
         :value="dismissCountDown"
         height="4px"/>
@@ -57,27 +57,24 @@
               <div class="mb-4">
                 <b-form-file
                   class="mb-2"
-                  v-model="series.file"
-                  :state="Boolean(series.file)"
+                  v-model="series.upload"
+                  :state="Boolean(series.upload)"
                   accept=".jpg, .png, .gif"
                   placeholder="Scegli una copertina da caricare oppure trascinala qui"
                   drop-placeholder="Trascina il file qui..."
                   :file-name-formatter="name_formatter"
                 ></b-form-file>
                 
-                <transition name="slide-fade">
-                  <b-button id='remove-image-banner' class="mb-4" @click="series.file = null" v-if='Boolean(series.file)'>Rimuovi immagine scelta</b-button>
-                </transition>
+                <b-button id='remove-image-banner' class="mb-4" @click="series.upload = null" v-if='Boolean(series.upload)'>Rimuovi immagine scelta</b-button>
               </div>
             </div>
             <div v-else>
               <small> Seleziona una copertina tramite il menu a tendina </small>
               <b-form-select v-model='selectedBanner' :options="availableBanners"></b-form-select>
-              <div class="float-right" v-if="this.selectedBanner !== ''">
+              <div class="float-right" v-if="Boolean(selectedBanner)">
                 <a 
                   id='banner-showcase-button' 
-                  @click="triggerBannerShowcase(selectedBanner)"
-                  >visualizza anteprima copertina..
+                  @click="triggerBannerShowcase(selectedBanner)">visualizza anteprima copertina..
                 </a>
               </div>
             </div>
@@ -98,29 +95,113 @@
       </small>
           
 
-      <!-- User table -->
-      <b-table id='user-table' class="mt-3" striped hover :items="items" :fields="fields">
+      <!-- Series table -->
+      <b-table id='series-table' class="mt-3" striped hover responsive :items="items" :fields="fields">
         <template v-slot:cell(actions)="{ item }">
           <b-btn @click="toggleActions(item)">
-            {{ button_text }}
+            Mostra azioni
           </b-btn>
         </template>
         <template v-slot:row-details="{ item }">
             <b-card class="text-left">
-              <b-button variant="danger" @click="deleteUser(item)">Elimina</b-button>
-              <b-button id="edit-button" variant="warning" @click="toggleModal(item)">Modifica</b-button>
+              <b-row>
+                <b-col>
+                  <h4>Descrizione</h4>
+                  <p>{{ item.description }}</p>
+                </b-col>
+                <b-col>
+                  <h4>Informazioni aggiuntive</h4>
+                  <p>Ultima modifica: {{ moment(item.updatedAt).format('DD/MM/YYYY HH:MM') }}</p>
+                </b-col>
+              </b-row>
+
+              <h4>Descrizione</h4>
+              
+              <hr>
+
+              <b-button variant="danger" @click="toggleDeleteModal(item)">Elimina</b-button>
+              <b-button variant="warning" @click="toggleEditModal(item)">Modifica</b-button>
+              <b-button variant="info" @click="manageEpisodes(item.name)">Gestisci episodi</b-button>
             </b-card>
         </template>
       </b-table>
     </div>
 
-    <!-- Edit modal -->
-    <b-modal ref="banner-showcase-modal" hide-footer>
+    <!-- Showcase modal -->
+    <b-modal ref="banner-showcase-modal" hide-footer title="Anteprima copertina">
       <div class="d-block text-center">
-        <h3>Anteprima copertina</h3>
+        <!-- Banner -->
+        <img alt="Banner showcase" v-bind:src="modal.banner" :fluid='true' />
       </div>
-      <!-- Banner -->
-      <img alt="Banner showcase" v-bind:src="this.modal.banner" :fluid='true' />
+    </b-modal>
+
+    <!-- Edit modal -->
+    <b-modal ref="edit-serie" centered title="Modifica serie" variant='warning' hide-footer>
+      <!-- Add users -->
+      <div class="d-block text-center mb-3 mt-1">
+        <b-form v-if='Boolean(selectedItem)'>
+          <h1 class="text-danger">Non usare, è un po' buggata</h1>
+          <b-row class="mb-2">
+            <b-col>
+              <!-- Nome -->
+              <label for="modal-name">Nome</label>
+              <b-form-input
+                id="modal-name"
+                v-model="selectedItem.name"
+                type="text"
+                required
+                placeholder="Nome"
+              ></b-form-input>
+            </b-col>
+          </b-row>
+
+          <div class="mb-2">
+              <label for="modal-description">Descrizione</label>
+              <b-form-textarea
+                id="modal-description"
+                v-model="selectedItem.description"
+                placeholder="Descrizione"
+                rows="3"
+                max-rows="6"
+              ></b-form-textarea>
+          </div>
+
+          <small> Seleziona una copertina tramite il menu a tendina </small>
+          <b-form-select v-model='this.selectedItem.banner' :options="availableBanners"></b-form-select>
+          <div class="text-right mb-3">
+            <a id='banner-showcase-button' 
+              @click="triggerBannerShowcase(selectedItem.banner)">visualizza anteprima copertina..
+            </a>
+          </div>
+
+          <!-- buttons -->
+          <b-row class="mt-3">
+            <b-col>
+              <b-button variant="outline-success" @click="updateSerie">Applica modifiche</b-button>
+            </b-col>
+            <b-col>
+              <b-button variant="warning" @click="toggleEditModal">Annulla</b-button>
+            </b-col>
+          </b-row>
+        </b-form>
+      </div>
+    </b-modal>
+
+    <!-- Delete confirmation modal-->
+    <b-modal ref="delete-serie" centered title="Elimina serie" variant='danger' hide-footer>
+      <div class="text-center">
+        <b-icon-trash class="rounded-circle bg-danger p-2" variant="light" font-scale='5'></b-icon-trash>
+        <p>Sei sicuro di voler eliminare questa serie? Eliminandola verranno eliminati anche tutti i suoi episodi</p>        
+        
+        <b-row class="mt-3">
+          <b-col>
+            <b-button variant="outline-danger" @click="deleteSerie()">Conferma eliminazione</b-button>
+          </b-col>
+          <b-col>
+            <b-button variant="warning" @click="toggleDeleteModal()">Annulla</b-button>
+          </b-col>
+        </b-row>
+      </div>
     </b-modal>
   </b-container>
 </template>
@@ -128,6 +209,7 @@
 
 <script>
 import Breadcumb from '@/components/global/Breadcumb'
+import moment from 'moment'
 import SeriesService from '@/services/SeriesService'
 import BannerService from '@/services/BannerService'
 
@@ -139,22 +221,37 @@ export default {
     return {
       items: [],
       availableBanners: [],
-      fields: ['username', 'name', 'surname', {
-        key: 'actions',
-        label: ''
-      }],
+      fields: [
+        {
+          key: 'name',
+          label: 'Nome',
+          sortable: true
+        },
+        {
+          key: 'createdAt',
+          label: 'Creato il',
+          sortable: true
+        },
+        {
+          key: 'actions',
+          label: '',
+          sortable: false
+        }
+      ],
       notification: 'success',
-      button_text: 'Mostra azioni',
       message: '',
       dismissSecs: 5,
       dismissCountDown: 0,
       showDismissibleAlert: false,
       isUploading: true,
       selectedBanner: null,
+      selectedItem: null,
+      defaultItem: null,
       series: {
         name: '',
         file: null,
-        description: ''
+        description: '',
+        upload: null
       },
       modal: {
         name: '',
@@ -167,6 +264,11 @@ export default {
     fillTable () {
       // Send request to User API
       SeriesService.get().then((result) => {
+        // Parse data using moment.js
+        result.data.forEach(data => {
+          data.createdAt = moment(data.createdAt).format('DD/MM/YYYY HH:MM')
+        })
+
         // Got response
         this.items = result.data
       }).catch((err) => {
@@ -177,7 +279,7 @@ export default {
     async uploadImage () {
       // Set form data
       const formData = new FormData()
-      formData.set('banner', this.series.file, this.series.file.name)
+      formData.set('banner', this.series.upload, this.series.upload.name)
       formData.set('name', this.series.name)
 
       // Upload image
@@ -212,25 +314,7 @@ export default {
         alert(err)
       })
     },
-    deleteSerie (user) {
-      SeriesService.delete(user.username).then((result) => {
-        this.notification = 'success'
-        this.message = 'Utente eliminato correttamente'
-        this.showAlert()
-
-        // Reload table
-        this.fillTable()
-      }).catch((err) => {
-        alert(err)
-      })
-    },
     toggleActions (item) {
-      if (item._showDetails) {
-        this.button_text = 'Mostra azioni'
-      } else {
-        this.button_text = 'Nascondi opzioni'
-      }
-
       this.$set(item, '_showDetails', !item._showDetails)
     },
     countDownChanged (dismissCountDown) {
@@ -242,33 +326,144 @@ export default {
     hideAlert () {
       this.dismissCountDown = 0
     },
+    toggleDeleteModal (item) {
+      this.selectedItem = item
+      this.$refs['delete-serie'].toggle()
+    },
+    toggleEditModal (item) {
+      if (item !== undefined) {
+        this.defaultItem = this.selectedItem = item
+      }
+      this.$refs['edit-serie'].toggle()
+    },
     async addSerie (e) {
       // Prevent default event execution
       e.preventDefault()
 
-      // Create formData object
-      const formData = new FormData()
-
+      console.log(this.series.file, Boolean(this.series.file))
       // Upload image (if selected)
-      if (this.series.file) {
+      if (this.series.upload) {
         // Wait for image upload on the server
         let uploadedFile = await this.uploadImage()
+        // Reset flag
+        this.series.upload = null
         // Append filename
-        formData.append('banner', uploadedFile.originalname)
+        this.series.file = uploadedFile.originalname
       } else {
-        // Use image path -> Append filename
-        console.log('Empty')
+        // Set value from select
+        this.series.file = this.selectedBanner
       }
 
-      console.log('Form data: ', formData)
+      // create data object
+      const data = {
+        'name': this.series.name,
+        'description': this.series.description,
+        'file': this.series.file
+      }
+
+      // Send HTTP request to APIs
+      SeriesService.create(data).then((result) => {
+        // Empty inputs
+        this.series.name = ''
+        this.series.file = null
+        this.series.description = ''
+        this.selectedBanner = null
+
+        // Hide errors
+        this.hideAlert()
+
+        // Show success alert
+        this.message = 'Serie creata correttamente'
+        this.notification = 'success'
+        this.showAlert()
+      }).catch((err) => {
+        if (err.response) {
+          // Set message
+          this.message = err.response.data.error
+          // Set notification type
+          this.notification = 'danger'
+          // Show notification
+          this.showAlert()
+        } else {
+          alert(err)
+        }
+      }).then(() => {
+        // Reload table
+        this.fillTable()
+      })
+    },
+    async deleteSerie () {
+      // Send DELETE request to API
+      await SeriesService.delete(this.selectedItem.name).then((result) => {
+        // Delete successfully
+        this.message = 'Serie eliminata con successo'
+        this.notification = 'success'
+        this.showAlert()
+      }).catch((err) => {
+        if (err.response) {
+          // Set alert message
+          this.message = err.response.data.error
+
+          // Set notification type
+          this.notification = 'danger'
+
+          // Show alert
+          this.showAlert()
+        } else {
+          alert(err)
+        }
+      }).then(() => {
+        // Reload table
+        this.fillTable()
+        // Close modal
+        this.toggleDeleteModal()
+        // Scroll to top
+        window.scrollTo(0, 0)
+      })
+    },
+    async updateSerie () {
+      // Get data
+      const data = {
+        'name': this.selectedItem.name,
+        'description': this.selectedItem.description,
+        'banner': this.selectedItem.banner
+      }
+
+      // Send data to update API
+      await SeriesService.edit(data, this.defaultItem.name).then((result) => {
+        // Delete successfully
+        this.message = 'Serie modificata con successo'
+        this.notification = 'success'
+        this.showAlert()
+      }).catch((err) => {
+        if (err.response) {
+          // Set alert message
+          this.message = err.response.data.error
+
+          // Set notification type
+          this.notification = 'danger'
+
+          // Show alert
+          this.showAlert()
+        } else {
+          alert(err)
+        }
+      }).then(() => {
+        // Reload table
+        this.fillTable()
+        // Close modal
+        this.toggleEditModal()
+        // Scroll to top
+        window.scrollTo(0, 0)
+      })
     },
     name_formatter () {
       if (this.series.file) {
         // Re-Format name
-        let name = this.series.file.name.replace(/\s+/g, '-').toLowerCase()
+        let name = this.series.upload.name.replace(/\s+/g, '-').toLowerCase()
 
         // Set new file name
-        Object.defineProperty(this.series.file, 'name', {
+        Object.defineProperty(this.series.upload, 'name', {
           writable: true,
           value: name
         })
@@ -279,16 +474,16 @@ export default {
     },
     triggerBannerShowcase (img) {
       // Build URL
-      let link = 'http://localhost:5000/series/' + img
-
-      // Show modal
-      console.warn('SHOWCASE MODAL WIP')
-
+      let link = process.env.VUE_APP_SERVER_URL + 'series/' + img
       // Toggle modal state
       this.$refs['banner-showcase-modal'].toggle('edit-button')
 
       // Set full image
       this.modal.banner = link
+    },
+    manageEpisodes (serieName) {
+      // Redirect to page
+      this.$router.push('/admin/serie/' + serieName)
     }
   },
   created () {
@@ -316,7 +511,7 @@ export default {
   transition: all .8s ease;
 }
 .slide-fade-leave-active {
-  transition: all 2s cubic-bezier(1.0, 0.5, 0.8, 1.0);
+  transition: all .8s cubic-bezier(1.0, 0.5, 0.8, 1.0);
 }
 .slide-fade-enter, .slide-fade-leave-to
 /* .slide-fade-leave-active below version 2.1.8 */ {
@@ -330,5 +525,11 @@ export default {
   cursor:pointer;
   color:blue;
   text-decoration:underline;
+}
+.custom-file-control[data-selected]::after {
+    content: attr(data-selected);
+}
+.custom-file-control[data-choose]::before {
+    content: attr(data-choose);
 }
 </style>

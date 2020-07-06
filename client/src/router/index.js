@@ -18,6 +18,7 @@ let router = new Router({
     {
       path: '/',
       name: 'Homepage',
+      title: 'ChiassoTV',
       component: Hello
     },
     {
@@ -37,6 +38,7 @@ let router = new Router({
           name: 'Login',
           component: Login,
           meta: {
+            title: 'ChiassoTV - Login',
             admin: false
           }
         },
@@ -45,6 +47,7 @@ let router = new Router({
           name: 'Gestione utenti',
           component: UserManagement,
           meta: {
+            title: 'ChiassoTV - Gestione utenti',
             breadcrumb: 'Gestione utenti',
             admin: true
           }
@@ -54,7 +57,18 @@ let router = new Router({
           name: 'Gestione serie',
           component: SeriesManagement,
           meta: {
+            title: 'ChiassoTV - Gestione serie',
             breadcrumb: 'Gestione serie',
+            admin: true
+          }
+        },
+        {
+          path: 'serie/:name',
+          name: 'Gestione episodi',
+          component: Login,
+          meta: {
+            title: 'ChiassoTV - Gestione episodi',
+            breadcrumb: 'Gestione episodi',
             admin: true
           }
         }
@@ -63,13 +77,20 @@ let router = new Router({
     {
       path: '*',
       name: '404 Not Found',
-      component: NotFound
+      component: NotFound,
+      meta: {
+        title: 'ChiassoTV - Pagina non trovata'
+      }
     }
   ]
 })
 
 // Add protected-routes check
 router.beforeEach((to, from, next) => {
+  console.log(to.title)
+  // Set page title
+  document.title = to.meta.title
+
   // Check for protected route
   if (to.meta.admin && !AuthenticationService.getToken()) {
     // No permission: redirect to login page
@@ -89,5 +110,5 @@ router.beforeEach((to, from, next) => {
   }
 })
 
-// Export router with setting
+// Export router with settings
 export default router

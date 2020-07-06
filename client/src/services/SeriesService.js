@@ -4,8 +4,8 @@ export default {
   get () {
     return Api().get('series')
   },
-  create (user) {
-    return Api().post('series', user)
+  create (data) {
+    return Api().post('series', data)
   },
   delete (name) {
     return Api().delete('series/' + name)

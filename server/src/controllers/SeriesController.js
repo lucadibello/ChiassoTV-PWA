@@ -9,10 +9,13 @@ module.exports = {
     create (req, res) {
         Serie.findOrCreate({
             defaults: { 
-                banner: req.body.banner,
+                banner: req.body.file,
                 name: req.body.name,
                 description: req.body.description || null
             },
+            order: [
+                ['createdAt', 'ASC'],
+            ],
             where: { name: req.body.name }
           }).then(result => {
             let isCreated = result[1]
@@ -22,7 +25,7 @@ module.exports = {
                 res.send({message: "Series created successfully"})
             } else {
                 // User already exists
-                res.status(400).send({message: "Series already exists"})
+                res.status(400).send({error: "Series already exists"})
             }
           })
     },

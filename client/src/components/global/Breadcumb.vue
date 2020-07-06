@@ -4,7 +4,7 @@
 
 <script>
 export default {
-  name: 'login',
+  name: 'breadcrumb',
   computed: {
     crumbs: function () {
       let pathArray = this.$route.path.split('/')
