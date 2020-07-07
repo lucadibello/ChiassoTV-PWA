@@ -16,7 +16,7 @@ const sequelize = new Sequelize(
 NOTE: LOAD DYNAMICALLY ALL MODELS
   -> NOT USED BECAUSE THE LOAD ORDER IS WRONG (CAN'T USE FOREIGN KEYS)
 
-fs
+  fs
   .readdirSync(__dirname)
   .filter((file) => file !== 'index.js')
   .forEach((file) => {
@@ -37,7 +37,6 @@ db[SeriesModel.name] = SeriesModel
 // Load episode model
 const EpisodeModel = sequelize.import(path.join(__dirname, 'Episode.js'))
 db[EpisodeModel.name] = EpisodeModel
-
 
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
