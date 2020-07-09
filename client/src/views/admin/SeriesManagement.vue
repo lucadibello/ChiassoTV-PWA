@@ -121,7 +121,7 @@
 
               <b-button variant="danger" @click="toggleDeleteModal(item)">Elimina</b-button>
               <b-button variant="warning" @click="toggleEditModal(item)">Modifica</b-button>
-              <b-button variant="info" @click="manageEpisodes(item.name)">Gestisci episodi</b-button>
+              <b-button variant="info" @click="manageEpisodes(item.encoded)">Gestisci episodi</b-button>
             </b-card>
         </template>
       </b-table>
@@ -208,7 +208,7 @@
 
 
 <script>
-import Breadcumb from '@/components/global/Breadcumb'
+import Breadcumb from '@/components/Breadcumb'
 import moment from 'moment'
 import SeriesService from '@/services/SeriesService'
 import BannerService from '@/services/BannerService'
@@ -220,6 +220,7 @@ export default {
   data () {
     return {
       items: [],
+      moment: moment,
       availableBanners: [],
       fields: [
         {
@@ -362,7 +363,7 @@ export default {
       }
 
       // Send HTTP request to APIs
-      SeriesService.create(data).then((result) => {
+      SeriesService.create(data).then(() => {
         // Empty inputs
         this.series.name = ''
         this.series.file = null
@@ -394,7 +395,7 @@ export default {
     },
     async deleteSerie () {
       // Send DELETE request to API
-      await SeriesService.delete(this.selectedItem.name).then((result) => {
+      await SeriesService.delete(this.selectedItem.name).then(() => {
         // Delete successfully
         this.message = 'Serie eliminata con successo'
         this.notification = 'success'
@@ -430,7 +431,7 @@ export default {
       }
 
       // Send data to update API
-      await SeriesService.edit(data, this.defaultItem.name).then((result) => {
+      await SeriesService.edit(data, this.defaultItem.name).then(() => {
         // Delete successfully
         this.message = 'Serie modificata con successo'
         this.notification = 'success'
@@ -473,13 +474,11 @@ export default {
       }
     },
     triggerBannerShowcase (img) {
-      // Build URL
-      let link = process.env.VUE_APP_SERVER_URL + 'series/' + img
+      // Set full image
+      this.modal.banner = (process.env.VUE_APP_SERVER_URL + 'series/' + img)
+      
       // Toggle modal state
       this.$refs['banner-showcase-modal'].toggle('edit-button')
-
-      // Set full image
-      this.modal.banner = link
     },
     manageEpisodes (serieName) {
       // Redirect to page

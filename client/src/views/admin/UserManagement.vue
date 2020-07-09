@@ -128,7 +128,7 @@
 
 
 <script>
-import Breadcumb from '@/components/global/Breadcumb'
+import Breadcumb from '@/components/Breadcumb'
 import UserService from '@/services/UserService'
 
 export default {
@@ -159,7 +159,7 @@ export default {
         surname: '',
         password: 'temp'
       },
-      _default_data: {}
+      defaultData: {}
     }
   },
   methods: {
@@ -176,7 +176,7 @@ export default {
       })
     },
     deleteUser (user) {
-      UserService.delete(user.username).then((result) => {
+      UserService.delete(user.username).then(() => {
         this.notification = 'success'
         this.message = 'Utente eliminato correttamente'
         this.showAlert()
@@ -215,12 +215,12 @@ export default {
       this.modal.surname = item.surname
 
       // Set default data
-      this._default_data = item
+      this.defaultData = item
     },
     onSubmit (e) {
       e.preventDefault()
       // Send data to APIs
-      UserService.edit(this.modal, this._default_data.username).then((result) => {
+      UserService.edit(this.modal, this.defaultData.username).then(() => {
         this.message = 'Utente modificato correttamente'
         this.showAlert()
 
@@ -244,7 +244,7 @@ export default {
       e.preventDefault()
 
       // Send API request
-      UserService.create(this.add).then((result) => {
+      UserService.create(this.add).then(() => {
         this.message = 'Hai creato correttamente l\'utente ' + this.add.username
 
         // Show notification

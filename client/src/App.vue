@@ -1,46 +1,28 @@
 <template>
   <div id="app">
-    <main>
-      <!-- <img src="./assets/logo.png" alt="Vue.js PWA"> -->
-      <router-view></router-view>
-    </main>
+    <router-view/>
   </div>
 </template>
 
-<script>
-export default {
-  name: 'app'
-}
-</script>
-
 <style>
-body {
-  margin: 0;
-}
-
 #app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
+  font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  text-align: center;
   color: #2c3e50;
 }
 
-header {
-  margin: 0;
-  height: 56px;
-  padding: 0 16px 0 24px;
-  background-color: #35495E;
-  color: #ffffff;
+#nav {
+  padding: 30px;
 }
 
-header span {
-  display: block;
-  position: relative;
-  font-size: 20px;
-  line-height: 1;
-  letter-spacing: .02em;
-  font-weight: 400;
-  box-sizing: border-box;
-  padding-top: 16px;
+#nav a {
+  font-weight: bold;
+  color: #2c3e50;
+}
+
+#nav a.router-link-exact-active {
+  color: #42b983;
 }
 </style>

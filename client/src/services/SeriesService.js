@@ -4,6 +4,9 @@ export default {
   get () {
     return Api().get('series')
   },
+  getSerie (serieName) {
+    return Api().get('series/' + serieName)
+  },
   create (data) {
     return Api().post('series', data)
   },

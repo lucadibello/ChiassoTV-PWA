@@ -10,6 +10,7 @@
           <b-nav-item href="/admin/utenti">Gestione utenti</b-nav-item>
           <b-nav-item href="/admin/serie">Gestione serie</b-nav-item>
           <b-nav-item href="/admin/banner">Gestione banner</b-nav-item>
+          <b-nav-item href="/admin/upload">Upload center</b-nav-item>
         </b-navbar-nav>
 
         <!-- Right aligned nav items -->

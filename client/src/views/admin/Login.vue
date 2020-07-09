@@ -27,8 +27,9 @@
           id="email-input"
           v-model="form.username"
           type="text"
+          autocomplete="username"
           required
-          placeholder="Enter email"/>
+          placeholder="Inserisci username"/>
 
 
         <b-form-input
@@ -36,8 +37,9 @@
           id="password-input"
           v-model="form.password"
           type="password"
+          autocomplete="current-password"
           required
-          placeholder="Enter password"/>
+          placeholder="Inserisci password"/>
       </b-form-group>
 
       <b-button type="submit" variant="primary">Login</b-button>
@@ -82,7 +84,6 @@ export default {
         this.$router.push('/admin')
       }).catch((err) => {
         if (err.response) {
-          console.log(err.response)
           // add error message inside alert
           this.errors = err.response.data.error
 

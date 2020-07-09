@@ -4,12 +4,13 @@
 
 <script>
 export default {
-  name: 'breadcrumb',
+  name: 'breadcumb',
   computed: {
     crumbs: function () {
       let pathArray = this.$route.path.split('/')
       pathArray.shift()
       let breadcrumbs = pathArray.reduce((breadcrumbArray, path, idx) => {
+        // Fill breadcumb
         breadcrumbArray.push({
           path: path,
           to: breadcrumbArray[idx - 1]
@@ -17,6 +18,7 @@ export default {
             : '/' + path,
           text: this.$route.matched[idx].meta.breadcrumb || path
         })
+
         return breadcrumbArray
       }, [])
       return breadcrumbs
