@@ -1,33 +1,36 @@
 module.exports = (sequelize, DataTypes) => {
     return sequelize.define('Episode', {
-        episode_number: {
-            type: DataTypes.INTEGER,
+        title: {
+            type: DataTypes.STRING(125),
             allowNull: false,
             primaryKey: true
         },
-        category_id: {
-            type: DataTypes.INTEGER,
+        serie: {
+            type: DataTypes.STRING(125),
             allowNull: false,
-            primaryKey: true
+            primaryKey: true,
+            references: {
+                // FOREIGN KEY (`serie`) REFERENCES `serie` (`name`))
+                model: sequelize.models.Serie,
+                key: 'encoded'
+            }
+        },
+        encoded: {
+            type: DataTypes.STRING(225),
+            primaryKey: true,
+            allowNull: false
         },
         link: {
             type: DataTypes.STRING(128),
             allowNull: false
         },
-        title: {
-            type: DataTypes.STRING(255),
-            allowNull: false
-        },
         description: {
-            type: DataTypes.STRING(1028),
+            type: DataTypes.STRING,
+            allowNull: true
         },
-        created_by: {
-            type: DataTypes.STRING(255),
-            allowNull: false
-        },
-        created_on: {
-            type: DataTypes.DATE(6),
-            allowNull: false
+        isFromYoutube: {
+            type: DataTypes.BOOLEAN,
+            default: false
         }
     },{
         tableName: 'episode'

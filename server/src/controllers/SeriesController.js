@@ -1,8 +1,20 @@
 const {Serie} = require('../models')
 
+function encodeTitle (title) {
+    // Re-Format name
+    return title.replace(/\s+/g, '-').toLowerCase()
+}
+
 module.exports = {
     get (req, res) {
         Serie.findAll().then((users) => {
+            res.send(users)
+        })
+    },
+    getSerie (req, res) {
+        Serie.findOne({
+            where: { encoded: req.params.name}
+        }).then((users) => {
             res.send(users)
         })
     },
@@ -11,12 +23,13 @@ module.exports = {
             defaults: { 
                 banner: req.body.file,
                 name: req.body.name,
+                encoded: encodeTitle(req.body.name),
                 description: req.body.description || null
             },
             order: [
                 ['createdAt', 'ASC'],
             ],
-            where: { name: req.body.name }
+            where: { encoded: encodeTitle(req.body.name) }
           }).then(result => {
             let isCreated = result[1]
 
@@ -32,7 +45,7 @@ module.exports = {
     delete (req, res) {
         Serie.destroy({
             where: {
-                name: req.params.name
+                encoded: req.params.name
             }
         }).then((result) => {
             if(result){
@@ -52,6 +65,7 @@ module.exports = {
             { 
                 name: req.body.name,
                 banner: req.body.banner,
+                encoded: encodeTitle(req.body.name)
             },
             { where: { name: req.params.name }}
         ).then((result) => {

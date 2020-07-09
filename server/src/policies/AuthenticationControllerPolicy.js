@@ -9,7 +9,7 @@ module.exports = {
                 .pattern(new RegExp('^(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._]+(?<![_.])$'))
                 .required(),
 
-            password: Joi.string().alphanum().required(),
+            password: Joi.string().required(),
         });
 
         // Validate data

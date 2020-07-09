@@ -7,7 +7,7 @@ module.exports = {
     create (req, res, next) {
         // Create validation schema
         const schema = Joi.object({
-            name: Joi.string().min(3).max(255)
+            name: Joi.string().min(3).max(125)
                 .pattern(new RegExp('^(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._ -]+(?<![_.])$'))
                 .required(),
             file: Joi.string().required(),
@@ -24,9 +24,6 @@ module.exports = {
             });
         }
         else{
-            // Re-Format name
-            req.body.name = req.body.name.replace(/\s+/g, '-').toLowerCase()
-            
             // Check if file exists using path
             if (!fs.existsSync(path.resolve(config.assets.series, req.body.file))) {
                 res.status(400).send({

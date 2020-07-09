@@ -8,10 +8,11 @@ const SeriesController = require('../../controllers/SeriesController')
 const SeriesControllerPolicy = require('../../policies/SeriesControllerPolicy')
 
 // Add JWT Middleware
-// router.use(JwtHelper.authenticateToken)
+router.use(JwtHelper.authenticateToken)
 
 // Create user
 router.get('/', SeriesController.get)
+router.get('/:name', SeriesController.getSerie)
 router.post('/', SeriesControllerPolicy.create, SeriesController.create)
 router.delete('/:name', SeriesController.delete)
 router.put('/:name', SeriesControllerPolicy.edit, SeriesController.edit)
