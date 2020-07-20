@@ -2,12 +2,17 @@ const multer = require('multer')
 const config = require('../config/config')
 const fs = require('fs')
 
+function encodeFilename (name) {
+    // Re-Format name
+    return name.replace(/\s+/g, '-').toLowerCase()
+}
+
 const storage = multer.diskStorage(
     {
         destination: config.assets.series,
         filename: function ( req, file, cb ) {
             // Set filename
-            cb( null, file.originalname );
+            cb( null, encodeFilename(file.originalname));
         }
     }
 );

@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+import AuthenticationService from '@/services/AuthenticationService'
 
 // page components
 Vue.use(VueRouter)
@@ -7,9 +8,46 @@ Vue.use(VueRouter)
 const routes = [
   {
     path: '/',
-    name: 'Homepage',
-    title: 'ChiassoTV',
-    component: () => import(/* webpackChunkName: "home" */ '@/views/Home')
+    component: () => import(/* webpackChunkName: "public" */ '@/views/Base'),
+    children: [
+      {
+        path: '/',
+        name: 'Homepage',
+        component: () => import(/* webpackChunkName: "public" */ '@/views/public/Home'),
+        meta: {
+          title: 'ChiassoTV - la web tv Ticinese',
+          admin: false
+        },
+      },
+      {
+        path: '/contatti',
+        name: 'Contatti',
+        component: () => import(/* webpackChunkName: "public" */ '@/views/public/Contatti'),
+        meta: {
+          title: 'ChiassoTV - Contatti',
+          admin: false
+        },
+      },
+      {
+        path: '/serie',
+        name: 'Serie',
+        component: () => import(/* webpackChunkName: "public" */ '@/views/public/Serie'),
+        meta: {
+          title: 'ChiassoTV - Serie',
+          admin: false
+        },
+      },
+      {
+        path: '/serie/:name',
+        name: 'Episodi',
+        component: () => import(/* webpackChunkName: "public" */ '@/views/public/Episodi'),
+        props: true,
+        meta: {
+          title: 'ChiassoTV - Episodi',
+          admin: false
+        },
+      }
+    ]
   },
   {
     path: '/admin',
@@ -79,6 +117,30 @@ const router = new VueRouter({
   mode: 'history',
   base: process.env.BASE_URL,
   routes
+})
+
+// Add protected-routes check
+router.beforeEach((to, from, next) => {
+  // Set page title
+  document.title = to.meta.title
+
+  // Check for protected route
+  if (to.meta.admin && !AuthenticationService.getToken()) {
+    // No permission: redirect to login page
+    next({
+      path: '/admin/login'
+    })
+  } else {
+    if (AuthenticationService.getToken() && to.name === 'Login') {
+      // Redirect to admin panel: the user is already logged in
+      next({
+        path: '/admin'
+      })
+    } else {
+      // Select normal route
+      next()
+    }
+  }
 })
 
 export default router

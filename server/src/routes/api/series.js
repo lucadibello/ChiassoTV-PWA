@@ -8,13 +8,15 @@ const SeriesController = require('../../controllers/SeriesController')
 const SeriesControllerPolicy = require('../../policies/SeriesControllerPolicy')
 
 // Add JWT Middleware
-router.use(JwtHelper.authenticateToken)
+// router.use(JwtHelper.authenticateToken)
 
-// Create user
+// No JWT needed
 router.get('/', SeriesController.get)
 router.get('/:name', SeriesController.getSerie)
-router.post('/', SeriesControllerPolicy.create, SeriesController.create)
-router.delete('/:name', SeriesController.delete)
-router.put('/:name', SeriesControllerPolicy.edit, SeriesController.edit)
+
+// JWT Needed
+router.post('/', JwtHelper.authenticateToken, SeriesControllerPolicy.create, SeriesController.create)
+router.delete('/:name', JwtHelper.authenticateToken, SeriesController.delete)
+router.put('/:name', JwtHelper.authenticateToken, SeriesControllerPolicy.edit, SeriesController.edit)
 
 module.exports = router;

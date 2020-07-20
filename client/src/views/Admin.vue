@@ -3,14 +3,17 @@
     <b-navbar class="mb-3" toggleable="sm" type="light" variant="light">
       <b-navbar-toggle target="nav-text-collapse"></b-navbar-toggle>
 
-      <b-navbar-brand>ChiassoTV</b-navbar-brand>
-
+      <router-link
+        to="/"
+        v-slot="{ href, navigate}">
+        <b-navbar-brand  :href="href" @click="navigate">ChiassoTV</b-navbar-brand >
+      </router-link>
+      
       <b-collapse id="nav-text-collapse" is-nav>
         <b-navbar-nav>
-          <b-nav-item href="/admin/utenti">Gestione utenti</b-nav-item>
-          <b-nav-item href="/admin/serie">Gestione serie</b-nav-item>
-          <b-nav-item href="/admin/banner">Gestione banner</b-nav-item>
-          <b-nav-item href="/admin/upload">Upload center</b-nav-item>
+          <router-link to="/admin/utenti" tag="b-nav-item">Gestione utenti</router-link>
+          <router-link to="/admin/serie" tag="b-nav-item">Gestione serie</router-link>
+          <router-link to="/admin/banner" tag="b-nav-item">Gestione banner</router-link>
         </b-navbar-nav>
 
         <!-- Right aligned nav items -->

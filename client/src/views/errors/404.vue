@@ -6,7 +6,15 @@
                     <div class="text-center d-table-cell align-middle wow slideInDown vh-100">
                         <h1 class="font-weight-bold mb-4 h1-responsive text-white">Oops!</h1>
                         <h4 class="h4-responsive text-white">la pagina che stai cercando non esiste...</h4>
-                        <a class="btn btn-danger mt-4 text-uppercase" href="/">torna alla homepage</a>
+                        
+                        <router-link
+                            to="/"
+                            v-slot="{ href, navigate}">
+
+                            <b-button :href="href" @click="navigate" class='btn btn-danger mt-4 text-uppercase'>
+                                torna alla homepage
+                            </b-button>
+                        </router-link>
                     </div>
                 </div>
             </div>

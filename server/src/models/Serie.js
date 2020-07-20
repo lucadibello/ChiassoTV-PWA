@@ -1,14 +1,12 @@
 module.exports = (sequelize, DataTypes) => {
     return sequelize.define('Serie', {
-        name: {
-            type: DataTypes.STRING(125),
-            allowNull: false,
-            primaryKey: true
-        },
         encoded: {
             type: DataTypes.STRING(225),
-            allowNull: false,
             primaryKey: true
+        },
+        name: {
+            type: DataTypes.STRING(125),
+            allowNull: false
         },
         description: {
             type: DataTypes.STRING,

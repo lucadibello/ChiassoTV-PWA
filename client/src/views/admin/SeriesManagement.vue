@@ -62,7 +62,6 @@
                   accept=".jpg, .png, .gif"
                   placeholder="Scegli una copertina da caricare oppure trascinala qui"
                   drop-placeholder="Trascina il file qui..."
-                  :file-name-formatter="name_formatter"
                 ></b-form-file>
                 
                 <b-button id='remove-image-banner' class="mb-4" @click="series.upload = null" v-if='Boolean(series.upload)'>Rimuovi immagine scelta</b-button>
@@ -94,37 +93,44 @@
         presenti in ogni serie cliccando sul pulsante: <b-col id="btn-example" lg="2" class="pb-2"><b-button size="sm" disabled>Mostra azioni</b-button></b-col>
       </small>
           
+      <div v-if="items.length !== 0">
+        <!-- Series table -->
+        <b-table id='series-table' class="mt-3" striped hover responsive :items="items" :fields="fields">
+          <template v-slot:cell(actions)="{ item }">
+            <b-btn @click="toggleActions(item)">
+              Mostra azioni
+            </b-btn>
+          </template>
+          <template v-slot:row-details="{ item }">
+              <b-card class="text-left">
+                <b-row>
+                  <b-col>
+                    <!-- Banner -->
+                    <b-img-lazy :src="getBannerUrl(item.banner)" thumbnail fluid></b-img-lazy>
+                  </b-col>
+                  <b-col>
+                    <h6>Informazioni aggiuntive</h6>
+                    <p>Ultima modifica: {{ moment(item.updatedAt).format('DD/MM/YYYY HH:MM') }}</p>
 
-      <!-- Series table -->
-      <b-table id='series-table' class="mt-3" striped hover responsive :items="items" :fields="fields">
-        <template v-slot:cell(actions)="{ item }">
-          <b-btn @click="toggleActions(item)">
-            Mostra azioni
-          </b-btn>
-        </template>
-        <template v-slot:row-details="{ item }">
-            <b-card class="text-left">
-              <b-row>
-                <b-col>
-                  <h4>Descrizione</h4>
-                  <p>{{ item.description }}</p>
-                </b-col>
-                <b-col>
-                  <h4>Informazioni aggiuntive</h4>
-                  <p>Ultima modifica: {{ moment(item.updatedAt).format('DD/MM/YYYY HH:MM') }}</p>
-                </b-col>
-              </b-row>
-
-              <h4>Descrizione</h4>
-              
-              <hr>
-
-              <b-button variant="danger" @click="toggleDeleteModal(item)">Elimina</b-button>
-              <b-button variant="warning" @click="toggleEditModal(item)">Modifica</b-button>
-              <b-button variant="info" @click="manageEpisodes(item.encoded)">Gestisci episodi</b-button>
-            </b-card>
-        </template>
-      </b-table>
+                    <h6>Descrizione</h6>
+                    <p>{{ item.description }}</p>
+                  </b-col>
+                </b-row>
+                <hr>
+                
+                <!-- Button group -->
+                <b-button-group>
+                  <b-button variant="danger" @click="toggleDeleteModal(item)">Elimina</b-button>
+                  <b-button variant="warning" @click="toggleEditModal(item)">Modifica</b-button>
+                  <b-button variant="info" @click="manageEpisodes(item.encoded)">Gestisci episodi</b-button>
+                </b-button-group>
+              </b-card>
+          </template>
+        </b-table>
+      </div>
+      <div v-else class="mt-2">
+        <h6 class='text-danger'>Non è disponibile alcuna serie. Per crearne una puoi utilizzare il modulo sovrastante</h6>
+      </div>
     </div>
 
     <!-- Showcase modal -->
@@ -214,6 +220,7 @@ import SeriesService from '@/services/SeriesService'
 import BannerService from '@/services/BannerService'
 
 export default {
+  name: 'SeriesManagement',
   components: {
     Breadcumb
   },
@@ -280,7 +287,13 @@ export default {
     async uploadImage () {
       // Set form data
       const formData = new FormData()
-      formData.set('banner', this.series.upload, this.series.upload.name)
+
+      // Read extension
+      let temp = this.series.upload.name.split('.')
+      const extension = temp[temp.length-1]
+
+      // Set values
+      formData.set('banner', this.series.upload, this.series.name + '.' + extension)
       formData.set('name', this.series.name)
 
       // Upload image
@@ -341,7 +354,6 @@ export default {
       // Prevent default event execution
       e.preventDefault()
 
-      console.log(this.series.file, Boolean(this.series.file))
       // Upload image (if selected)
       if (this.series.upload) {
         // Wait for image upload on the server
@@ -349,7 +361,7 @@ export default {
         // Reset flag
         this.series.upload = null
         // Append filename
-        this.series.file = uploadedFile.originalname
+        this.series.file = uploadedFile.filename
       } else {
         // Set value from select
         this.series.file = this.selectedBanner
@@ -395,7 +407,7 @@ export default {
     },
     async deleteSerie () {
       // Send DELETE request to API
-      await SeriesService.delete(this.selectedItem.name).then(() => {
+      await SeriesService.delete(this.selectedItem.encoded).then(() => {
         // Delete successfully
         this.message = 'Serie eliminata con successo'
         this.notification = 'success'
@@ -416,6 +428,8 @@ export default {
       }).then(() => {
         // Reload table
         this.fillTable()
+        // Reload banner selector
+        this.fillBannerSelector()
         // Close modal
         this.toggleDeleteModal()
         // Scroll to top
@@ -458,21 +472,6 @@ export default {
         window.scrollTo(0, 0)
       })
     },
-    name_formatter () {
-      if (this.series.file) {
-        // Re-Format name
-        let name = this.series.upload.name.replace(/\s+/g, '-').toLowerCase()
-
-        // Set new file name
-        Object.defineProperty(this.series.upload, 'name', {
-          writable: true,
-          value: name
-        })
-
-        // Return new file name
-        return name
-      }
-    },
     triggerBannerShowcase (img) {
       // Set full image
       this.modal.banner = (process.env.VUE_APP_SERVER_URL + 'series/' + img)
@@ -483,6 +482,9 @@ export default {
     manageEpisodes (serieName) {
       // Redirect to page
       this.$router.push('/admin/serie/' + serieName)
+    },
+    getBannerUrl (banner) {
+      return process.env.VUE_APP_SERVER_URL + 'series/' + banner
     }
   },
   created () {

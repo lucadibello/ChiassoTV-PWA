@@ -12,6 +12,7 @@ const app = express();
 
 // Set middlewares
 app.use(bodyParser.json());
+app.use(bodyParser.text());
 
 app.use(morgan("combined"));
 app.use(cors());
@@ -34,7 +35,6 @@ app.use('/api/series', series)
 
 const banners = require('./routes/api/banners')
 app.use('/api/banners', banners)
-
 
 // Sync database
 sequelize.sync()

@@ -7,9 +7,9 @@ const router = express.Router()
 const BannerController = require('../../controllers/BannerController')
 
 // Add JWT Middleware
-// router.use(JwtHelper.authenticateToken)
+router.use(JwtHelper.authenticateToken)
 
-// Create user
+// Upload series banner
 router.get('/', BannerController.get)
 router.patch('/', BannerController.upload)
 

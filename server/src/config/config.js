@@ -18,6 +18,7 @@ module.exports = {
         passphrase: process.env.JWT_PASSPHRASE || 'Chiassotv&1'
     },
     assets: {
-        series: process.env.ASSETS_SERIES || path.resolve(__dirname, '..', '..', 'assets/series')
+        series: process.env.ASSETS_SERIES || path.resolve(__dirname, '..', '..', 'assets/series'),
+        episodes: process.env.ASSETS_EPISODES || path.resolve(__dirname, '..', '..', 'assets/episodes')
     }
 }

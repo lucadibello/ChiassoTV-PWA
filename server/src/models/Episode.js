@@ -6,11 +6,12 @@ module.exports = (sequelize, DataTypes) => {
             primaryKey: true
         },
         serie: {
-            type: DataTypes.STRING(125),
-            allowNull: false,
+            type: DataTypes.STRING(225),
             primaryKey: true,
+            onDelete: 'cascade',
+            onUpdate: 'cascade',
             references: {
-                // FOREIGN KEY (`serie`) REFERENCES `serie` (`name`))
+                // FOREIGN KEY (`serie`) REFERENCES `serie` (`encoded`))
                 model: sequelize.models.Serie,
                 key: 'encoded'
             }
@@ -28,6 +29,11 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             allowNull: true
         },
+        thumbnail: {
+            type: DataTypes.STRING(128),
+            allowNull: true,
+            default: null
+        },
         isFromYoutube: {
             type: DataTypes.BOOLEAN,
             default: false
@@ -35,4 +41,5 @@ module.exports = (sequelize, DataTypes) => {
     },{
         tableName: 'episode'
     })
+    
 }
