@@ -1,25 +1,63 @@
 <template>
   <div>
     <!-- Vetrina -->
-    <div class="slideshow">
+    <div class="slideshow" v-if="showcase.episodes.length > 0">
       <div id="slideshowHeader" class="text-white header-violet">
         <h1 class="display-4">Vetrina</h1>
       </div>
-      <div id="slideshowContent">
-        <!-- Swiper.js Slideshow -->
-        <swiper ref="mySwiper" :options="swiperOptions">
-          <swiper-slide v-for="showcaseEpisode in showcase" :key="showcaseEpisode.episode">
-            <!-- Video player container -->
-            <div class="w-100 p-5">
-              <!-- VideoJS -->
-              <video-player  class="video-player-box"
-                    ref="videoPlayer"
-                    :options="playerOptions">
-              </video-player>
+      <div id="slideshowContent" >
+        <div class="w-100 p-5">
+          <transition name="fade" mode="out-in">
+            <!-- Video container -->
+            <div class="container-fluid" :key="showcase.index">
+              <!-- Episode title -->
+                <div class="d-block text-left" >
+                  <h4>{{ showcase.episodes[showcase.index].episode_information.title }}</h4>
+                  <small>{{ showcase.episodes[showcase.index].episode_information.serie }}</small>
+                </div>
+
+              <div v-if="showcase.episodes[showcase.index].episode_information.isFromYoutube">
+                <b-embed
+                  type="iframe"
+                  aspect="16by9"
+                  :src="showcase.episodes[showcase.index].episode_information.link + '?modestbranding=1'"
+                  allowfullscreen
+                ></b-embed>
+              </div>
+              <div v-else>
+                <!-- VideoJS -->
+                <video-player  class="video-player-box"
+                      ref="videoPlayer"
+                      :options="playerOptions">
+                </video-player>
+              </div>
             </div>
-          </swiper-slide>
-          <div class="swiper-pagination" slot="pagination"></div>
-        </swiper>
+          </transition>
+
+
+          <!-- Carousel controls -->
+          <div class="text-center mt-4" v-if="showcase.episodes.length > 1">
+            
+            <!-- Video index -->
+            <div class="w-100">
+              <small>{{showcase.index + 1}} / {{showcase.episodes.length}}</small>
+            </div>
+
+            <!-- Carousel controls -->
+            <b-row>
+              <b-col>
+                <b-button @click="showcasePrevious" rounded variant="primary" v-bind:disabled="showcase.index <= 0">
+                  <b-icon-arrow-left></b-icon-arrow-left> Video precedente
+                </b-button>
+              </b-col>
+              <b-col>
+                <b-button @click="showcaseNext" rounded variant="primary" v-bind:disabled="showcase.index >= showcase.episodes.length - 1">
+                  Video successivo <b-icon-arrow-right></b-icon-arrow-right>
+                </b-button>
+              </b-col>
+            </b-row>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -28,7 +66,7 @@
       <div id="seriesHeader" class="text-white header-violet">
         <h1 class="display-4">Serie</h1>
         <!-- Animated button -->
-        <b-button variant="success" pill @click="isCollapsedSerie = !isCollapsedSerie" class="collapseButton" v-bind:class="{isCollapsed: !this.isCollapsedSerie}">{{ this.isCollapsedSerie ? "Nascondi serie" : 'Mostra serie' }}</b-button>
+        <b-button variant="success" pill @click="isCollapsedSerie = !isCollapsedSerie" class="collapseButton mb-2" v-bind:class="{isCollapsed: !this.isCollapsedSerie}">{{ this.isCollapsedSerie ? "Nascondi serie" : 'Mostra serie' }}</b-button>
       </div>
 
       <!-- Load last updated series -->
@@ -82,8 +120,8 @@
         </b-col>
       </b-row>
     </div>
-
   </div>
+  
 </template>
 
 <script>
@@ -91,42 +129,35 @@
 import SeriesService from '@/services/SeriesService'
 import HomepageService from '@/services/HomepageService'
 
-// Import Swiper.JS (Vue Version)
-import { Swiper, SwiperSlide } from 'vue-awesome-swiper'
-import 'swiper/swiper-bundle.css';
-
 // Import VideoPlayer component
 import VideoPlayer from '@/components/VideoPlayer'
+
+// Import mime-type database library
+import mimeType from 'mime-types'
 
 export default {
   name: 'Home',
   components: {
-    Swiper,
-    SwiperSlide,
     VideoPlayer
   },
   data () {
     return {
       series: [],
-      showcase: [],
       maxSeries: 4,
+      mimeTypeUtility: mimeType,
       isCollapsedSerie: true,
-      swiperOptions: {
-        pagination: {
-          el: '.swiper-pagination'
-        },
-        // Some Swiper option/callback...
+      // Swiper JS options
+      showcase: {
+        episodes: [],
+        index: 0
       },
+      // VideoJS options
       playerOptions: {
-        // videojs options
-        muted: true,
+        muted: false,
         language: 'it',
         fill: true,
         playbackRates: [0.5, 0.75, 1.0, 1.25, 1.5, 2.0],
-        sources: [{
-          type: 'application/x-mpegurl',
-          src: "http://localhost:5000/hls/output.m3u8"
-        }]
+        sources: []
       },
     }
   },
@@ -134,7 +165,7 @@ export default {
     loadShowcase() {
       // Get all showcase episodes
       HomepageService.get().then(episodes => {
-        this.showcase = episodes.data
+        this.showcase.episodes = episodes.data
       }).catch(() => {
         // Show error message
         this.$bvToast.toast(
@@ -173,6 +204,47 @@ export default {
     },
     getSerieThumbnail(banner) {
       return process.env.VUE_APP_SERVER_URL + 'series/' + banner
+    },
+    showcaseNext () {
+      // Check index
+      if (this.showcase.index < this.showcase.episodes.length - 1) {
+        
+        // Skip video (add 1 to current index)
+        this.showcase.index += 1
+
+        // Set video source (if it's local)
+        this.setVideoSource()
+      }
+    },
+    showcasePrevious () {
+      // Check index
+      if (this.showcase.index > 0) {
+        // Skip video
+        this.showcase.index -= 1
+        
+        // Set video source (if it's local)
+        this.setVideoSource()
+      }
+    },
+    setVideoSource () {
+      // Get current video
+      const video = this.showcase.episodes[this.showcase.index]
+
+      // Check if the video is from youtube
+      if (!video.episode_information.isFromYoutube) {
+
+        // Set video source
+        this.playerOptions.sources = [{
+          src: this.getVideoURL(video.serie, video.episode),
+          type: this.getMimeType(video.episode_information.link) || 'ciao'
+        }]
+      }
+    },
+    getMimeType(filename) {
+      return this.mimeTypeUtility.lookup(filename)
+    },
+    getVideoURL (serie, episode) {
+      return process.env.VUE_APP_SERVER_URL + `api/episodes/${serie}/${episode}/episode`
     }
   },
   mounted () {
@@ -284,6 +356,7 @@ export default {
       width: 100%;
       flex: unset !important;
       margin-bottom: 2vh;
+      text-align: center;
     }
 
     .series-buttons button, .series-buttons a{

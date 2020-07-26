@@ -7,16 +7,13 @@ const router = express.Router()
 const HomepageController = require('../../controllers/HomepageController')
 const HomepageControllerPolicy = require('../../policies/HomepageControllerPolicy')
 
-// Add JWT Middleware
-router.use(JwtHelper.authenticateToken)
+// Add episode to showcase (JWT auth)
+router.post('/:serie/:episode', JwtHelper.authenticateToken,  HomepageControllerPolicy.generic, HomepageController.add);
 
-// Add episode to showcase
-router.post('/:serie/:episode', HomepageControllerPolicy.generic, HomepageController.add);
+// Remove episode from showcase (JWT auth)
+router.delete('/:serie/:episode', JwtHelper.authenticateToken, HomepageControllerPolicy.generic, HomepageController.delete);
 
-// Remove episode from showcase
-router.delete('/:serie/:episode', HomepageControllerPolicy.generic, HomepageController.delete);
-
-// Get episode in showcase
+// Get episode in showcase (NO AUTH)
 router.get('/', HomepageController.get)
 
 module.exports = router;

@@ -11,7 +11,6 @@ module.exports = (sequelize, DataTypes) => {
         },
         serie: {
             type: DataTypes.STRING(225),
-            unique: true,
             onDelete: 'cascade',
             onUpdate: 'cascade',
             references: {

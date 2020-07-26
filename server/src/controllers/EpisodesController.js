@@ -172,35 +172,50 @@ module.exports = {
         })
     },
     deleteEpisode (req, res) {
-        // Delete episode directory from server
-        let dirs = fs.readdirSync(path.resolve(config.assets.episodes, req.params.serie))
 
-        // Cycle every directory
-        const b64EpisodeName = Buffer.from(req.params.episode).toString('base64')
-        
-        dirs.forEach((episodeDir) => {
-            if (episodeDir === b64EpisodeName) {
-                // Remove all files inside directory
-                rmDir(path.resolve(config.assets.episodes, req.params.serie, b64EpisodeName), true)
-            }
-        })
-
-        Episode.destroy({
+        // Check if episode is from youtube
+        Episode.findOne({
             where: {
-                serie: req.params.serie,
                 encoded: req.params.episode
             }
-        }).then((result) => {
-            if(result){
-                res.send({
-                    message: "Episode deleted successfully"
+        }).then(episode => {
+            // Check if from youtube
+            if (!episode.isFromYoutube) {
+                // If local: delete local files
+                let dirs = fs.readdirSync(path.resolve(config.assets.episodes, req.params.serie))
+
+                // Cycle every directory
+                const b64EpisodeName = Buffer.from(req.params.episode).toString('base64')
+
+                dirs.forEach((episodeDir) => {
+                    if (episodeDir === b64EpisodeName) {
+                        // Remove all files inside directory
+                        rmDir(path.resolve(config.assets.episodes, req.params.serie, b64EpisodeName), true)
+                    }
                 })
             }
-            else{
-                res.status(400).send({
-                    error: `The specified episode does not exists in the specified series ('${req.params.serie}')`
-                })
-            }
+
+            // Remove DB record
+            Episode.destroy({
+                where: {
+                    serie: req.params.serie,
+                    encoded: req.params.episode
+                }
+            }).then((result) => {
+                if(result){
+                    res.send({
+                        message: "Episode deleted successfully"
+                    })
+                }
+                else{
+                    res.status(400).send({
+                        error: `The specified episode does not exists in the specified series ('${req.params.serie}')`
+                    })
+                }
+            })
+        }).catch(err => {
+            // Send back MySQL error message
+            res.status(400).send({error: err})
         })
     },
     addYoutube (req, res) {

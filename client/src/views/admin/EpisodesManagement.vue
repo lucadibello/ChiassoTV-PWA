@@ -2,7 +2,13 @@
     <b-container>
       <div class="row mb-3">
         <div class="col-md-6">
-          <h6 class="custom-link"><a href="/admin/serie"><b-icon icon='arrow-bar-left'></b-icon> torna alla gestione delle serie</a></h6>
+          <h6 class="custom-link">
+            <router-link
+              to="/admin/serie"
+              v-slot="{ href, navigate}">
+              <a :href="href" @click="navigate"><b-icon icon='arrow-bar-left'></b-icon> torna alla gestione delle serie</a>
+            </router-link>
+          </h6>
         </div>
       </div>
 

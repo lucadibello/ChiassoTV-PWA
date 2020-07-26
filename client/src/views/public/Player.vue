@@ -56,29 +56,34 @@
             <!-- Load videos -->
             <transition name="fade">
               <div v-if="related.done">
-                <!-- Load related episodes cards -->
-                <div v-for="episode in related.episodes" :key="episode.encoded" class="gallery-card">
-                    
-                  <!-- Related episode card -->
-                  <b-card :img-src="getEpisodeThumbnail(episode.encoded)" img-alt="Card image" img-left class="mb-3">
-                    <b-card-text>
-                      <h4>{{ episode.title }}</h4>
-                      <p> {{ minify(episode.description) }}</p>
-                    </b-card-text>
-
-                    <b-card-footer>
+                <!-- Check video length -->
+                <div v-if="related.episodes.length > 0">
+                  <!-- Load related episodes cards -->
+                  <div v-for="episode in related.episodes" :key="episode.encoded" class="gallery-card">
                       
-                      <router-link
-                        :to="`/serie/${episode.serie}/${episode.encoded}`"
-                        v-slot="{ href, navigate}">
+                    <!-- Related episode card -->
+                    <b-card :img-src="getEpisodeThumbnail(episode.encoded)" img-alt="Card image" img-left class="mb-3">
+                      <b-card-text>
+                        <h4>{{ episode.title }}</h4>
+                        <p> {{ minify(episode.description) }}</p>
+                      </b-card-text>
 
-                        <b-button class="mt-2" variant='success' :href="href" @click="navigate">
-                          <b-icon-play-fill></b-icon-play-fill> Guarda l'episodio
-                        </b-button>
-                      </router-link>
-                    </b-card-footer>
-                  </b-card>
+                      <b-card-footer>
+                        
+                        <router-link
+                          :to="`/serie/${episode.serie}/${episode.encoded}`"
+                          v-slot="{ href, navigate}">
 
+                          <b-button class="mt-2" variant='success' :href="href" @click="navigate">
+                            <b-icon-play-fill></b-icon-play-fill> Guarda l'episodio
+                          </b-button>
+                        </router-link>
+                      </b-card-footer>
+                    </b-card>
+                  </div>
+                </div>
+                <div class="text-center mt-4" v-else>
+                  <h4 >Non sono disponibili altri episodi</h4>
                 </div>
               </div>
               <div v-else>
@@ -190,7 +195,10 @@ export default {
           }
         })
         .catch(err => {
-          alert(err);
+          // Log error message
+          console.warn(err)
+          // Redirect to 404 page
+          this.$router.push('/404')
         });
     },
     loadRelatedVideos() {
@@ -228,7 +236,19 @@ export default {
           }
         })
         .catch(err => {
-          alert(err);
+          // Log error
+          console.warn(err)
+
+          // Show error message
+          this.$bvToast.toast(
+            "C'è stato un problema durante il caricamento dei video correlati",
+            {
+              title: "Caricamento video correlati ",
+              variant: "danger",
+              autoHideDelay: 5000,
+              appendToast: true
+            }
+          );
         });
       }
     },
@@ -249,7 +269,7 @@ export default {
 			}
 		},
   },
-  mounted() {
+  created() {
     // Load episode information
     this.loadEpisode();
     // Set to loaded flag to 'true'
@@ -283,6 +303,10 @@ export default {
 		object-fit: contain;
 		border-radius: 0.75rem;
 		margin: 10px;
+  }
+
+  .gallery-card .card-body{
+    text-align: right;
   }
   
   .card-footer {

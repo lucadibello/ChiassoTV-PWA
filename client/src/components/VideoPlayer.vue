@@ -48,7 +48,7 @@ export default {
         // 查看文档: https://docs.videojs.com/tutorial-options.html#fluid
         autoplay: true,
         controls: true,
-        language: 'zh',
+        language: 'it',
         inactivityTimeout: 0,
         preload: 'auto',
         fluid: false,

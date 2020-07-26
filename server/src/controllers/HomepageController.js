@@ -1,15 +1,24 @@
-const { Showcase } = require('../models')
+const { Showcase, Episode } = require('../models')
+
+// Set references for JOIN
+Showcase.belongsTo(Episode, {targetKey:'encoded',foreignKey: 'episode', as: 'episode_information'});
 
 module.exports = {
     get (req, res) {
         Showcase.findAll({
             order: [
                 ['createdAt', 'DESC']
-            ]
+            ],
+            include: [{
+                model: Episode,
+                required: true,
+                as: 'episode_information'
+            }]
         }).then(episodes => {
             // Send back episodes
             res.send(episodes)
         }).catch(err => {
+            console.log(err)
             // Send error back to the client
             res.status(400).send({error: err})
         })
