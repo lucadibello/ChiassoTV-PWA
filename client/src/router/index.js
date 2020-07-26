@@ -46,6 +46,16 @@ const routes = [
           title: 'ChiassoTV - Episodi',
           admin: false
         },
+      },
+      {
+        path: '/serie/:name/:episode',
+        name: 'Player',
+        component: () => import(/* webpackChunkName: "player" */ '@/views/public/Player'),
+        props: true,
+        meta: {
+          title: 'ChiassoTV - WIP',
+          admin: false
+        },
       }
     ]
   },
@@ -73,7 +83,7 @@ const routes = [
       {
         path: 'utenti',
         name: 'Gestione utenti',
-        component: () => import(/* webpackChunkName: "admin-panel" */ '../views/admin/UserManagement'),
+        component: () => import(/* webpackChunkName: "admin-panel-extra" */ '../views/admin/UserManagement'),
         meta: {
           title: 'ChiassoTV - Gestione utenti',
           breadcrumb: 'Gestione utenti',
@@ -98,6 +108,17 @@ const routes = [
         meta: {
           title: 'ChiassoTV - Gestione episodi',
           breadcrumb: 'Gestione episodi',
+          admin: true
+        }
+      },
+      {
+        path: 'home',
+        name: 'Gestione homepage',
+        component: () => import(/* webpackChunkName: "admin-panel" */ '../views/admin/HomepageManagement'),
+        props: true,
+        meta: {
+          title: 'ChiassoTV - Gestione homepage',
+          breadcrumb: 'Gestione homepage',
           admin: true
         }
       }

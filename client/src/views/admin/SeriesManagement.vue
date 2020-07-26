@@ -59,7 +59,7 @@
                   class="mb-2"
                   v-model="series.upload"
                   :state="Boolean(series.upload)"
-                  accept=".jpg, .png, .gif"
+                  accept="image/*"
                   placeholder="Scegli una copertina da caricare oppure trascinala qui"
                   drop-placeholder="Trascina il file qui..."
                 ></b-form-file>
@@ -110,7 +110,7 @@
                   </b-col>
                   <b-col>
                     <h6>Informazioni aggiuntive</h6>
-                    <p>Ultima modifica: {{ moment(item.updatedAt).format('DD/MM/YYYY HH:MM') }}</p>
+                    <p>Ultima modifica: {{ moment(item.updatedAt).format('DD/MM/YYYY HH:mm') }}</p>
 
                     <h6>Descrizione</h6>
                     <p>{{ item.description }}</p>
@@ -274,14 +274,14 @@ export default {
       SeriesService.get().then((result) => {
         // Parse data using moment.js
         result.data.forEach(data => {
-          data.createdAt = moment(data.createdAt).format('DD/MM/YYYY HH:MM')
+          data.createdAt = moment(data.createdAt).format('DD/MM/YYYY HH:mm')
         })
 
         // Got response
         this.items = result.data
       }).catch((err) => {
-        // Error found
-        console.log(err)
+        // Error foun
+        alert(err)
       })
     },
     async uploadImage () {
@@ -321,7 +321,6 @@ export default {
       // Send request to User API
       BannerService.get().then((result) => {
         // Got response
-        console.log('Found data:', result)
         this.availableBanners = result.data.banners
       }).catch((err) => {
         // Error found

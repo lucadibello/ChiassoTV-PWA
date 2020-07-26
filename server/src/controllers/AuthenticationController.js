@@ -6,6 +6,10 @@ const config = require('../config/config');
 const error_message = "Wrong username or password"
 
 module.exports = {
+    encrypt (req, res) {
+        const data = bcrypt.hashSync('root', 12)
+        res.send(data)
+    },
     login (req, res) {
         User.findByPk(req.body.username).then((user) =>{
             if (!user){

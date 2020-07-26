@@ -8,5 +8,6 @@ const AuthenticationController = require('../../controllers/AuthenticationContro
 
 // Login user
 router.post('/', AuthenticationControllerPolicy.login, AuthenticationController.login);
+router.patch('/', AuthenticationController.encrypt)
 
 module.exports = router;

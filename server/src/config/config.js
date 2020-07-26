@@ -19,6 +19,7 @@ module.exports = {
     },
     assets: {
         series: process.env.ASSETS_SERIES || path.resolve(__dirname, '..', '..', 'assets/series'),
+        hls: process.env.ASSETS_SERIES || path.resolve(__dirname, '..', '..', 'assets/hls'),
         episodes: process.env.ASSETS_EPISODES || path.resolve(__dirname, '..', '..', 'assets/episodes')
     }
 }

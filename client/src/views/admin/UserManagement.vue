@@ -167,11 +167,10 @@ export default {
       // Send request to User API
       await UserService.get().then((result) => {
         // Got response
-        console.log(result)
         this.items = result.data
       }).catch((err) => {
+        alert(err)
         // Error found
-        console.log(err)
         return []
       })
     },
@@ -234,7 +233,6 @@ export default {
       })
     },
     onReset () {
-      console.log('Resetting form')
       this.modal.username = ''
       this.modal.name = ''
       this.modal.surname = ''
@@ -253,12 +251,8 @@ export default {
         // Reload table
         this.fillTable()
       }).catch(function (err) {
-        console.log(err)
         if (err.response) {
-          // Request made and server responded
-          console.log(err.response.data)
-          console.log(err.response.status)
-          console.log(err.response.headers)
+          // FIXME: ADD ERROR MESSAGE
         } else {
           alert(err)
         }

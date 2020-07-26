@@ -1,4 +1,5 @@
 <template>
+  <b-container>
   <div class="mt-3">
 
     <h1>Contatti</h1>
@@ -64,6 +65,7 @@
       </b-row>
     </section>
   </div>
+  </b-container>
 </template>
 
 <script>

@@ -27,7 +27,11 @@ rmDir = function(dirPath, removeSelf) {
 
 module.exports = {
     get (req, res) {
-        Serie.findAll().then((users) => {
+        Serie.findAll({
+            order: [
+                ['updatedAt', 'DESC']
+            ]
+        }).then((users) => {
             res.send(users)
         })
     },

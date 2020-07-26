@@ -1,4 +1,5 @@
 <template>
+	<b-container>
 	<div class="mt-3">
 		<!-- List of all the available series -->
 		<h1>{{ this.serie.title }}</h1>
@@ -17,7 +18,9 @@
 		</b-row>
 
 		<hr>
-		<div v-if="episodes.length !== 0">
+
+		<div v-if="loaded">
+			<div v-if="episodes.length !== 0">
 			<!-- Single episode view -->
 			<div class="episode" v-if="!galleryView">
 				<b-carousel
@@ -25,7 +28,7 @@
 					style="text-shadow: 0px 0px 2px #000"
 					class="mb-5"
 					fade
-					indicators
+					controls
 					img-width="1024"
 					img-height="480"
 				>
@@ -39,7 +42,7 @@
 									class="d-block img-fluid w-100 blurred-image"
 									width="1024"
 									height="480"
-									src="https://picsum.photos/600/300/?image=25"
+									:src="getEpisodeThumbnail(episode)"
 									:alt="episode.title + ' alt'"
 								>
 							</template>
@@ -51,9 +54,15 @@
 
 							<hr class="my-4">
 
-							<b-button class='mr-3' variant="primary" href="#">Salva nei preferiti</b-button>
-							<b-button variant="success" href="#">Guarda video</b-button>
+							<b-button class='mr-3' variant="primary" href="#">Salva nei preferiti (WIP) </b-button>
 
+							<router-link
+								:to="'/serie/' + serie.encoded + '/' + episode.encoded" 
+								v-slot="{ href, navigate}">
+
+								<b-button variant="success" @click='navigate' :href="href">Guarda video</b-button>
+							</router-link>
+							
 							<div class="mb-3"></div>
 						</b-carousel-slide>
 					</div>
@@ -61,26 +70,39 @@
 			</div>
 			<!-- Gallery view -->
 			<div v-else>
-				<div v-for="episode in episodes" :key="episode.encoded" class="gallery-panel">
-					<b-card
-						class="mb-2 gallery-card"
-						:title="episode.title"
-						img-src="https://picsum.photos/600/300/?image=25"
-						:img-alt="episode.title + ' banner'"
-						img-top
-						tag="article">
+				<b-card-group deck>
+					<div v-for="episode in episodes" :key="episode.encoded" class="gallery-panel">
+						<b-card
+							class="m-2 gallery-card"
+							:title="episode.title"
+							:img-src="getEpisodeThumbnail(episode)"
+							:img-alt="episode.title + ' banner'"
+							img-top
+							tag="article">
 
-						<b-card-text>
-							{{ minify(episode.description) }}
-						</b-card-text>
+							<b-card-text>
+								{{ minify(episode.description) }}
+							</b-card-text>
 
-						<b-button href="#" variant="success">Guarda episodio</b-button>
-					</b-card>
-				</div>
+							<router-link
+								:to="'/serie/' + serie.encoded + '/' + episode.encoded" 
+								v-slot="{ href, navigate}">
+
+								<b-button variant="success" @click='navigate' :href="href">Guarda video</b-button>
+							</router-link>
+						</b-card>
+					</div>
+				</b-card-group>
 			</div>
 		</div>
 		<div v-else>
 			<h4 class="text-danger">La serie non possiede alcun episodio.</h4>
+		</div>
+		</div>
+		<div v-else>
+			<div class="d-flex justify-content-center mb-3">
+				<b-spinner label="Loading..."></b-spinner>
+			</div>
 		</div>
 		
 		<!-- Sidebar -->
@@ -112,6 +134,7 @@
 			</div>
 		</b-sidebar>
 	</div>
+	</b-container>
 </template>
 
 <script>
@@ -125,16 +148,17 @@ export default {
 			// episode view type
 			galleryView: window.innerWidth <= 700,
 			// Series img base
-      seriesBase: process.env.VUE_APP_SERVER_URL + 'series/',
+			seriesBase: process.env.VUE_APP_SERVER_URL + 'series/',
 			// Episodes list
 			episodes: [],
+			loaded: false,
 			// Service variables
-      serie: {
-        title: '',
-        description: '',
-        banner: '',
-        createdAt: '',
-        encoded: ''
+			serie: {
+				title: '',
+				description: '',
+				banner: '',
+				createdAt: '',
+				encoded: ''
 			},
 			// Single-view properties
 			singleProps: {
@@ -147,7 +171,7 @@ export default {
 				class: 'my-5'
 			},
 			// Description max length
-			descriptionMaxWords: 5
+			descriptionMaxWords: 20
 		}
 	},
 	methods: {
@@ -174,7 +198,6 @@ export default {
 		minify (string) {
 			// Get words
 			const words = string.trim().split(' ')
-			console.log('n words', words.length)
 			// Check length
 			if (words.length > this.descriptionMaxWords) {
 				// Truncate string
@@ -182,12 +205,18 @@ export default {
 			} else {
 				return string
 			}
+		},
+		getEpisodeThumbnail (item) {
+			// Return local thumbnail
+			return process.env.VUE_APP_SERVER_URL + `api/episodes/${this.$route.params.name}/${item.encoded}/thumbnail`
 		}
 	},
 	created () {
 		// Read episodes
 		this.loadSerie()
 		this.getEpisodes()
+		// Set flag
+		this.loaded = true
 	}
 }
 </script>
@@ -199,30 +228,30 @@ export default {
   vertical-align: top;
 }
 
+.gallery-card img {
+	height: 20vh;
+	object-fit: scale-down;
+}
+
 .gallery-panel {
 	margin: 4px !important;
 	width: 30%;
 	display: inline-block;
 }
 
-.background-blurred {
-  /* Full height */
-  height: 100%;
-
-  /* Center and scale the image nicely */
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
-	border: solid black 1px;
-}
-
 .blurred-image {
 	filter: blur(4px);
+	max-height: 50vh;
+	object-fit: scale-down;
 }
 
 @media only screen and (max-width: 700px) {
 	.gallery-panel {
 		width: 100%;
+	}
+
+	.gallery-panel img {
+		margin-top: 5vh;
 	}
 	
 	#galleryViewButton {
@@ -240,5 +269,20 @@ export default {
 	#header-action-container .col {
 		margin-bottom: 2vh;
 	}
+}
+</style>
+
+<style>
+/* Black arrows */
+.carousel-control-prev-icon, .carousel-control-next-icon  {
+	transition: 1s;
+    border-radius: 50% !important;
+	background-color: black;
+    box-shadow: 0 0 0 5px black !important;
+}
+
+.carousel-control-prev-icon:hover, .carousel-control-next-icon:hover {
+	transition: 1s;
+    box-shadow: 0 0 0 6px grey !important;
 }
 </style>

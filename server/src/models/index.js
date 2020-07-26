@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const Sequelize = require('sequelize');
-const config = require('../config/config')
+const config = require('../config/config');
 const db = {}
 
 // Conect to DB
@@ -37,6 +37,10 @@ db[SeriesModel.name] = SeriesModel
 // Load episode model
 const EpisodeModel = sequelize.import(path.join(__dirname, 'Episode.js'))
 db[EpisodeModel.name] = EpisodeModel
+
+// Load showcase model
+const ShowcaseModel = sequelize.import(path.join(__dirname, 'Showcase.js'))
+db[ShowcaseModel.name] = ShowcaseModel
 
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;

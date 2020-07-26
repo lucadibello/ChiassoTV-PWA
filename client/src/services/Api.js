@@ -3,7 +3,7 @@ import Vue from 'vue'
 
 // Create base object
 const axiosInstance = axios.create({
-  baseURL: 'http://localhost:5000/api'
+  baseURL: process.env.VUE_APP_SERVER_URL + 'api'
 })
 
 // Send token with all requests

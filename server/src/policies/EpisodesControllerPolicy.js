@@ -2,7 +2,7 @@ const Joi = require('@hapi/joi')
 const config = require('../config/config')
 
 // Load series controller
-const {Serie} = require('../models')
+const {Serie, Episode} = require('../models')
 
 async function seriesExists (seriesName) {
     // Wait validation
@@ -20,6 +20,22 @@ async function seriesExists (seriesName) {
     })
 }
 
+async function episodeExists (episodeName) {
+    // Wait validation
+    return await Episode.findAll({attributes: ['encoded']}).then((episodes) => {
+
+        const names = []
+
+        // Extract data
+        episodes.forEach(serie => {
+            names.push(serie.encoded.toLowerCase())
+        })
+        
+        // Set callback variable
+        return names.includes(episodeName)
+    })
+}
+
 module.exports = {
     get (req, res, next) {
         // Check if the specified series exists
@@ -27,6 +43,32 @@ module.exports = {
             if (status) {
                 // Series exists
                 next()
+            } else {
+                // Cannot find series
+                res.status(400).send({
+                    error: `'${req.params.serie}' is not a valid serie`
+                })
+            }
+        })
+    },
+    getEpisode (req, res, next) {
+        // Check if the specified series exists
+        seriesExists(req.params.serie.toLowerCase()).then((seriesStatus) => {
+            if (seriesStatus) {
+                // Series exists
+                // Check if episode exists
+
+                episodeExists(req.params.episode.toLowerCase()).then((episodeStatus) => {
+                    if (episodeStatus) {
+                        // Episode exists, validation completed
+                        next()
+                    } else {
+                        // Cannot find episode
+                        res.status(400).send({
+                            error: `The episode ${req.params.episode} does not exist in the specified series (${req.params.serie})`
+                        })
+                    }
+                })
             } else {
                 // Cannot find series
                 res.status(400).send({

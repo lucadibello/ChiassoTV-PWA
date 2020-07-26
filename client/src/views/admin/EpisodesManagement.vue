@@ -34,7 +34,9 @@
         </template>
         <div class="px-3 py-2">
           <h3>Informazioni serie</h3>
-          <img class='mb-2' v-if="Boolean(serie.banner)" :src="imgBase + serie.banner" fluid thumbnail>
+          <div class="w-100">
+            <b-img class='mb-2' v-if="Boolean(serie.banner)" :src="imgBase + serie.banner" fluid thumbnail></b-img>
+          </div>
           <h4>Titolo</h4>
           <p>{{ serie.title }}</p>
 
@@ -87,6 +89,7 @@
                 required
               ></b-form-textarea>
 
+              <small>Immagine di copertina</small>
               <file-pond
                 name="thumbnail"
                 ref="image-pond"
@@ -99,8 +102,6 @@
               <b-button type='submit' variant="primary" :disabled='!thumbnail.done'>Aggiungi episodio <b-icon icon='bookmark-plus'></b-icon></b-button>
             </div>
           </b-form>
-
-          <!--<b-progress :value="value" :max="max" show-value class="mb-3"></b-progress> -->
         </div>
         <!-- From youtube -->
         <div v-else>
@@ -165,12 +166,14 @@
                 <b-card class="text-left">
                   <b-row>
                     <b-col>
-                      <h6>Descrizione</h6>
-                      <p>{{ item.description }}</p>
+                      <b-img-lazy :src='getEpisodeThumbnail(item)' thumbnail fluid></b-img-lazy>
                     </b-col>
                     <b-col>
+                      <h6>Descrizione</h6>
+                      <p>{{ item.description }}</p>
+
                       <h6>Informazioni aggiuntive</h6>
-                      <p>Ultima modifica: {{ moment(item.updatedAt).format('DD/MM/YYYY HH:MM') }}</p>
+                      <p>Ultima modifica: {{ moment(item.updatedAt).format('DD/MM/YYYY HH:mm') }}</p>
                     </b-col>
                   </b-row>
                   <b-row>
@@ -235,11 +238,9 @@ import FilePondPluginFileValidateType from 'filepond-plugin-file-validate-type';
 // Import the plugin styles + Import the plugin code
 import FilePondPluginImagePreview from 'filepond-plugin-image-preview';
 import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css';
-// Import the plugin code
-import FilePondPluginFileRename from 'filepond-plugin-file-rename';
 
 // Create FilePond component
-const FilePond = VueFilePond(FilePondPluginFileValidateType, FilePondPluginImagePreview, FilePondPluginFileRename)
+const FilePond = VueFilePond(FilePondPluginFileValidateType, FilePondPluginImagePreview)
 
 export default {
   components: {
@@ -266,7 +267,7 @@ export default {
       delete: {
         episode: null
       },
-      // Service variables
+      // Serie variables
       serie: {
         title: '',
         description: '',
@@ -317,16 +318,22 @@ export default {
         process: {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
+          },
+          ondata: (formData) => {
+            // Add episode title to request
+            formData.append('title', this.add.title);
+            return formData;
           }
         },
         revert: {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
+          },
+          ondata: (formData) => {
+            // Add episode title to request
+            formData.append('title', this.add.title);
+            return formData;
           }
-        },
-        allowFileRename: true,
-        fileRenameFunction: (file) => {
-          return `.thumbnail${file.extension}`;
         }
       }
     }
@@ -337,7 +344,7 @@ export default {
       EpisodeService.get(this.$route.params.name).then((result) => {
         // Format create date
         result.data.forEach((episode) => {
-          episode.createdAt = moment(episode.createdAt).format('DD/MM/YYYY HH:MM')
+          episode.createdAt = moment(episode.createdAt).format('DD/MM/YYYY HH:mm')
         })
 
         // Set data inside variable
@@ -400,7 +407,7 @@ export default {
       const data = {
         title: this.add.title,
         description: this.add.description,
-        filename: this.upload.video,
+        video: this.upload.video,
         thumbnail: this.thumbnail.image
       }
 
@@ -450,6 +457,10 @@ export default {
         this.loadEpisodes()
       })
     },
+    getEpisodeThumbnail (item) {
+      // Return local thumbnail
+      return process.env.VUE_APP_SERVER_URL + `api/episodes/${this.$route.params.name}/${item.encoded}/thumbnail`
+    },
     countDownChanged (dismissCountDown) {
       this.dismissCountDown = dismissCountDown
     },
@@ -464,9 +475,6 @@ export default {
     },
     processFile (err, file) {
       if (err) {
-        // Log errors
-        console.log(err)
-
         // Hide data
         this.upload.show = false
       } else {
@@ -477,14 +485,10 @@ export default {
     },
     processThumbnail (err, file) {
       if (err) {
-        // Log errors
-        console.log(err)
-
+        alert(err)
         // Hide data
         this.thumbnail.done = false
       } else {
-        // Show inputs
-        console.log(file)
         this.thumbnail.done = true
         this.thumbnail.image = file.filename
       }
@@ -492,7 +496,7 @@ export default {
     removeThumbnail (err) {
       if (err) {
         // Log errors
-        console.log(err)
+        alert(err)
       }
       this.thumbnail.image = null
       this.upload.done = false
@@ -500,14 +504,14 @@ export default {
     removeFile (err) {
       if (err) {
         // Log errors
-        console.log(err)
+        alert(err)
       }
       this.upload.video = null
       this.upload.show = false
     },
     processFileAbort (err) {
       if (err) {
-        console.log(err)
+        alert(err)
       }
       this.upload.show = false
     },

@@ -1,13 +1,17 @@
 module.exports = (sequelize, DataTypes) => {
     return sequelize.define('Episode', {
+        encoded: {
+            type: DataTypes.STRING(225),
+            primaryKey: true,
+        },
         title: {
             type: DataTypes.STRING(125),
             allowNull: false,
-            primaryKey: true
+            unique: true
         },
         serie: {
             type: DataTypes.STRING(225),
-            primaryKey: true,
+            unique: true,
             onDelete: 'cascade',
             onUpdate: 'cascade',
             references: {
@@ -15,11 +19,6 @@ module.exports = (sequelize, DataTypes) => {
                 model: sequelize.models.Serie,
                 key: 'encoded'
             }
-        },
-        encoded: {
-            type: DataTypes.STRING(225),
-            primaryKey: true,
-            allowNull: false
         },
         link: {
             type: DataTypes.STRING(128),

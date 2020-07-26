@@ -14,6 +14,7 @@
           <router-link to="/admin/utenti" tag="b-nav-item">Gestione utenti</router-link>
           <router-link to="/admin/serie" tag="b-nav-item">Gestione serie</router-link>
           <router-link to="/admin/banner" tag="b-nav-item">Gestione banner</router-link>
+          <router-link to="/admin/home" tag="b-nav-item">Gestione homepage</router-link>
         </b-navbar-nav>
 
         <!-- Right aligned nav items -->

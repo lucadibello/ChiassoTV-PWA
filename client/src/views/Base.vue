@@ -3,11 +3,8 @@
     <!-- Page header -->
     <Header></Header>
 
-    <!-- Page container -->
-    <b-container>
-        <!-- Other pages will be loaded inside the router-vie tag -->
-        <router-view></router-view>
-    </b-container>
+    <!-- Other pages will be loaded inside the router-vie tag -->
+    <router-view></router-view>
   </div>
 </template>
 
