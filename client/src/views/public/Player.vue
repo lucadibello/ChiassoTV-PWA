@@ -10,15 +10,20 @@
       <div class="w-100 p-5">
         <!-- Video -->
         <div v-if="episode.isFromYoutube">
-          <!-- VideoJS + YouTube embedded -->
-          <video-player  class="video-player-box"
-                 ref="videoPlayer"
-                 :options="playerOptions">
-          </video-player>
+          <!-- YouTube embedded -->
+          <b-embed
+            type="iframe"
+            aspect="16by9"
+            :src="episode.link + '?modestbranding=1'"
+            allowfullscreen
+          ></b-embed>
         </div>
         <div v-else>
           <!-- VideoJS with local video -->
-          WIP
+          <video-player class="video-player-box"
+                 ref="videoPlayer"
+                 :options="playerOptions">
+          </video-player>
         </div>
 
         <!-- Info box -->
@@ -112,8 +117,11 @@
 import EpisodeService from "@/services/EpisodeService";
 import SeriesService from "@/services/SeriesService";
 
-// Video component
+// Video components
 import videoPlayer from '@/components/VideoPlayer'
+
+// Import libraries
+import mimeType from 'mime-types'
 import moment from 'moment'
 
 export default {
@@ -146,11 +154,8 @@ export default {
         fluid: true,
         responsive: true,
         playbackRates: [0.5, 0.75, 1.0, 1.25, 1.5, 2.0],
-        sources: [{
-          type: 'application/x-mpegurl',
-          src: "http://localhost:5000/hls/output.m3u8"
-        }],
-        poster: this.getEpisodeThumbnail()
+        sources: [],
+        poster: null
       },
       related: {
         episodes: [],
@@ -159,7 +164,8 @@ export default {
       maxRelatedVideos: 10,
       descriptionMaxWords: 50,
       loaded: false,
-      moment: moment
+      moment: moment,
+      mimeTypeUtility: mimeType
     };
   },
   methods: {
@@ -193,10 +199,13 @@ export default {
           if (!this.episode.isFromYoutube) {
             this.episode.thumbnail = episode.data.thumbnail;
 
+            // Set video poster
+            this.playerOptions.poster = this.getEpisodeThumbnail(this.$route.params.episode)
+            
             // Set video source
             this.playerOptions.sources = [{
-              src: this.getVideoURL(video.serie, video.episode),
-              type: this.getMimeType(video.episode_information.link)
+              src: this.getVideoURL(episode.data.serie, episode.data.encoded),
+              type: this.getMimeType(episode.data.link)
             }]
           }
         })
@@ -273,7 +282,13 @@ export default {
 			} else {
 				return string
 			}
-		},
+    },
+    getMimeType(filename) {
+      return this.mimeTypeUtility.lookup(filename)
+    },
+    getVideoURL (serie, episode) {
+      return process.env.VUE_APP_SERVER_URL + `api/episodes/${serie}/${episode}/episode`
+    }
   },
   created() {
     // Load episode information
@@ -296,7 +311,7 @@ export default {
     this.loadRelatedVideos() 
     // All data loaded: set loaded flag to True
     this.loaded = true
-  }
+  },
 };
 </script>
 
