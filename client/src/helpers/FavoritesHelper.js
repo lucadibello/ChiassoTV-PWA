@@ -4,10 +4,10 @@ const EPISODE_KEY = Buffer.from('episode_fav').toString('base64')
 
 module.exports = {
     getFavoriteSeries() {
-        return localStorage.getItem(SERIE_KEY)
+        return localStorage.getItem(SERIE_KEY) || []
     },
     getFavoriteEpisodes() {
-        return localStorage.getItem(EPISODE_KEY)
+        return localStorage.getItem(EPISODE_KEY) || [] 
     },
     isEpisodeFavorite(serie, episode) {
         // Get episodes list (if undefined: empty array)
