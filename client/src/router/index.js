@@ -133,8 +133,8 @@ const routes = [
     }
   },
   {
-    path: '404',
-    name: '404 Not Found',
+    path: '/404',
+    name: '404 Not Found GLOBAL',
     component: () => import(/* webpackChunkName: "error-404" */ '../views/errors/404'),
     meta: {
       title: 'ChiassoTV - Pagina non trovata'
