@@ -236,7 +236,7 @@ export default {
         // Set video source
         this.playerOptions.sources = [{
           src: this.getVideoURL(video.serie, video.episode),
-          type: this.getMimeType(video.episode_information.link) || 'ciao'
+          type: this.getMimeType(video.episode_information.link)
         }]
       }
     },
