@@ -87,8 +87,7 @@
 
                     <!-- Buttons -->
                     <div class="d-block ml-2 series-buttons">
-                      <b-button class='w-30' round variant="primary">
-                        <b-icon-star></b-icon-star> Salva nei preferiti</b-button>
+                      <FavoriteButton variant="primary" :serie="serie.encoded"></FavoriteButton>
 
                       <router-link
                         :to="'/serie/' + serie.encoded" 
@@ -129,8 +128,9 @@
 import SeriesService from '@/services/SeriesService'
 import HomepageService from '@/services/HomepageService'
 
-// Import VideoPlayer component
+// Import components
 import VideoPlayer from '@/components/VideoPlayer'
+import FavoriteButton from '@/components/FavoriteButton'
 
 // Import mime-type database library
 import mimeType from 'mime-types'
@@ -138,7 +138,7 @@ import mimeType from 'mime-types'
 export default {
   name: 'Home',
   components: {
-    VideoPlayer
+    VideoPlayer, FavoriteButton
   },
   data () {
     return {
