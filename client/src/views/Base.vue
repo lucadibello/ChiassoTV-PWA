@@ -18,6 +18,22 @@ export default {
   name: 'ChiassoTV',
   components: {
     Header
+  },
+  data() {
+    return {
+      isOnline: navigator.onLine
+    }
+  },
+  mounted () {
+    // Connection changed to online
+    window.addEventListener('online', () => {
+      this.isOnline = true
+    });
+    
+    // Connection changed to offline
+    window.addEventListener('offline', () => {
+      this.isOnline = false
+    });
   }
 }
 </script>
@@ -25,7 +41,7 @@ export default {
 <style>
 .fade-enter-active,
 .fade-leave-active {
-  transition-duration: 0.3s;
+  transition-duration: 0.1s;
   transition-property: opacity;
   transition-timing-function: ease;
 }

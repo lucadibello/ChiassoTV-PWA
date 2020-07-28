@@ -2,7 +2,7 @@
     <b-button round :variant="variant" @click="saveElement" v-if="!isStarred" >
         <b-icon-star></b-icon-star> Salva nei preferiti</b-button>
         
-    <b-button round :variant="variant" v-else @click="removeElement">
+    <b-button round :variant="undoVariant" v-else @click="removeElement">
         <b-icon-star-fill></b-icon-star-fill> Rimuovi dai preferiti</b-button>
 </template>
 
@@ -21,6 +21,10 @@ export default {
         variant: {
             type: String,
             default: 'primary'
+        },
+        undoVariant: {
+            type: String,
+            default: 'danger'
         }
     },
     data() {
@@ -39,6 +43,9 @@ export default {
                     FavoritesHelper.saveSeries(this.serie)
                 }
                 this.isStarred = true
+
+                // Emit save event
+                this.$emit('element-saved', {serie: this.serie, episode: this.episode, action: 'save'})
             }
         },
         removeElement() {
@@ -50,6 +57,9 @@ export default {
                 }
 
                 this.isStarred = false
+
+                // Emit remove event
+                this.$emit('element-removed', {serie: this.serie, episode: this.episode, action: 'remove'})
             }
         }
     },

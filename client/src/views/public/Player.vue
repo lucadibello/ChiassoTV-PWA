@@ -1,5 +1,5 @@
 <template>
-  <b-container>
+  <b-container v-if="this.$parent.isOnline">
   <div class="mt-3">
     <!-- List of all the available series -->
     <h1>{{ episode.title }}</h1>
@@ -7,16 +7,12 @@
 
     <div v-if="loaded">
       <!-- Video box -->
-      <div class="w-100 p-5">
+      <div class="w-100 p-5" id="video-container">
         <!-- Video -->
-        <div v-if="episode.isFromYoutube">
+        <div class="youtube-embed-video" v-if="episode.isFromYoutube">
           <!-- YouTube embedded -->
-          <b-embed
-            type="iframe"
-            aspect="16by9"
-            :src="episode.link + '?modestbranding=1'"
-            allowfullscreen
-          ></b-embed>
+          <youtube :video-id="this.$youtube.getIdFromURL(episode.link)" 
+            :player-vars="{ autoplay: 1, rel: 0, modestbranding: 1}" height="100%" width="100%" host="https://www.youtube-nocookie.com"/>
         </div>
         <div v-else>
           <!-- VideoJS with local video -->
@@ -38,11 +34,11 @@
           <b-tab title="Informazioni">
             <p>
               <b-row>
-                <b-col>
+                <b-col id="episode-thumbnail">
                   <h6>Anteprima </h6>
                   <b-img-lazy :src="getEpisodeThumbnail(this.$route.params.episode)" fluid thumbnail></b-img-lazy>
                 </b-col>
-                <b-col>
+                <b-col id="episode-information">
                   <p><b>Data di caricamento:</b> {{ moment(this.episode.createdAt).format('DD/MM/YYYY HH:mm') }}</p>
                   <p><b>Serie:</b> {{ this.serie.title }}</p>
                   
@@ -67,7 +63,7 @@
                   <div v-for="episode in related.episodes" :key="episode.encoded" class="gallery-card">
                       
                     <!-- Related episode card -->
-                    <b-card :img-src="getEpisodeThumbnail(episode.encoded)" img-alt="Card image" img-left class="mb-3">
+                    <b-card :img-src="getEpisodeThumbnail(episode.encoded)" :img-alt="episode.title + ' thumbnail'" img-left class="mb-3">
                       <b-card-text>
                         <h4>{{ episode.title }}</h4>
                         <p> {{ minify(episode.description) }}</p>
@@ -88,7 +84,7 @@
                   </div>
                 </div>
                 <div class="text-center mt-4" v-else>
-                  <h4 >Non sono disponibili altri episodi</h4>
+                  <h4>Non sono disponibili altri episodi</h4>
                 </div>
               </div>
               <div v-else>
@@ -110,6 +106,9 @@
     </div>
   </div>
   </b-container>
+  <div v-else>
+    <OfflinePage></OfflinePage>
+  </div>
 </template>
 
 <script>
@@ -119,7 +118,7 @@ import SeriesService from "@/services/SeriesService";
 
 // Video components
 import videoPlayer from '@/components/VideoPlayer'
-
+import OfflinePage from '@/components/OfflinePage'
 // Import libraries
 import mimeType from 'mime-types'
 import moment from 'moment'
@@ -127,7 +126,7 @@ import moment from 'moment'
 export default {
   name: "EpisodeViewer",
   components: {
-    videoPlayer
+    videoPlayer, OfflinePage
   },
   data() {
     return {
@@ -149,7 +148,7 @@ export default {
       },
       playerOptions: {
         // videojs options
-        muted: true,
+        muted: false,
         language: 'it',
         fluid: true,
         responsive: true,
@@ -332,7 +331,7 @@ export default {
   
   .card-footer {
 		background-color: transparent;
-	}
+  }
 
 	@media only screen and (max-width: 700px) {
 		.card {
@@ -343,7 +342,25 @@ export default {
 
 		.gallery-card img {
 			width: 100%;
-			max-width: 100%;
-		}
+      max-width: 100%;
+    }
+    
+    #video-container {
+      padding: unset !important;
+    }
+
+    #episode-thumbnail {
+      flex-basis: unset !important;
+      width: 100% !important;
+      margin-bottom: 2vh;
+    }
 	}
+</style>
+
+<style>
+  /* iframe global width */
+  iframe {
+    width: 100% !important;
+    height: 100% !important;
+  }
 </style>

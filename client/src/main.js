@@ -4,11 +4,6 @@ import './registerServiceWorker'
 import router from './router'
 import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
 
-// Import FontAwesome
-import { library } from '@fortawesome/fontawesome-svg-core'
-import { faUserSecret } from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-
 // Import boostrap4 css
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
@@ -26,11 +21,11 @@ Vue.use(IconsPlugin)
 // Install VueSweeetAlert2
 Vue.use(VueSweetalert2)
 
-// Install FontAwesome
-library.add(faUserSecret)
-Vue.component('font-awesome-icon', FontAwesomeIcon)
-
 Vue.config.productionTip = false
+
+// Install Youtube IFrame API
+import VueYouTubeEmbed from 'vue-youtube-embed'
+Vue.use(VueYouTubeEmbed)
 
 new Vue({
   router,

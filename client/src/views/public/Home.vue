@@ -1,12 +1,12 @@
 <template>
-  <div>
+  <div v-if="this.$parent.isOnline">
     <!-- Vetrina -->
     <div class="slideshow" v-if="showcase.episodes.length > 0">
       <div id="slideshowHeader" class="text-white header-violet">
         <h1 class="display-4">Vetrina</h1>
       </div>
       <div id="slideshowContent" >
-        <div class="w-100 p-5">
+        <div class="w-100 p-5" id="slideshow-content-video">
           <transition name="fade" mode="out-in">
             <!-- Video container -->
             <div class="container-fluid" :key="showcase.index">
@@ -17,14 +17,10 @@
                 </div>
 
               <div v-if="showcase.episodes[showcase.index].episode_information.isFromYoutube">
-                <b-embed
-                  type="iframe"
-                  aspect="16by9"
-                  :src="showcase.episodes[showcase.index].episode_information.link + '?modestbranding=1'"
-                  allowfullscreen
-                ></b-embed>
+                <youtube :video-id="this.$youtube.getIdFromURL(showcase.episodes[showcase.index].episode_information.link)" 
+                  :player-vars="{ autoplay: 1, rel: 0, modestbranding: 1}" host="https://www.youtube-nocookie.com"/>
               </div>
-              <div v-else>
+              <div v-else> 
                 <!-- VideoJS -->
                 <video-player  class="video-player-box"
                       ref="videoPlayer"
@@ -44,13 +40,13 @@
             </div>
 
             <!-- Carousel controls -->
-            <b-row>
-              <b-col>
+            <b-row id="slideshow-content-controls">
+              <b-col id="slideshow-content-controls-previous">
                 <b-button @click="showcasePrevious" rounded variant="primary" v-bind:disabled="showcase.index <= 0">
                   <b-icon-arrow-left></b-icon-arrow-left> Video precedente
                 </b-button>
               </b-col>
-              <b-col>
+              <b-col id="slideshow-content-controls-next">
                 <b-button @click="showcaseNext" rounded variant="primary" v-bind:disabled="showcase.index >= showcase.episodes.length - 1">
                   Video successivo <b-icon-arrow-right></b-icon-arrow-right>
                 </b-button>
@@ -120,7 +116,9 @@
       </b-row>
     </div>
   </div>
-  
+  <div v-else>
+    <OfflinePage></OfflinePage>
+  </div>
 </template>
 
 <script>
@@ -131,6 +129,7 @@ import HomepageService from '@/services/HomepageService'
 // Import components
 import VideoPlayer from '@/components/VideoPlayer'
 import FavoriteButton from '@/components/FavoriteButton'
+import OfflinePage from '@/components/OfflinePage'
 
 // Import mime-type database library
 import mimeType from 'mime-types'
@@ -138,7 +137,7 @@ import mimeType from 'mime-types'
 export default {
   name: 'Home',
   components: {
-    VideoPlayer, FavoriteButton
+    VideoPlayer, FavoriteButton, OfflinePage
   },
   data () {
     return {
@@ -158,7 +157,7 @@ export default {
         fill: true,
         playbackRates: [0.5, 0.75, 1.0, 1.25, 1.5, 2.0],
         sources: []
-      },
+      }
     }
   },
   methods: {
@@ -248,15 +247,10 @@ export default {
     }
   },
   mounted () {
-    // Load showcase
-    this.loadShowcase()
-    // Load series
-    this.loadSeries()
-  },
-  computed: {
-    swiper() {
-      return this.$refs.mySwiper.$swiper
-    }
+      // Load showcase
+      this.loadShowcase()
+      // Load series
+      this.loadSeries()
   }
 }
 </script>
@@ -307,11 +301,6 @@ export default {
 
   .collapse-jumbotron {
     width: 100%;
-  }
-
-  /* Section shown */
-  .collapseButton {
-
   }
 
   .series-buttons button, .series-buttons a{
@@ -365,5 +354,20 @@ export default {
       margin-bottom: 5px;
       margin-right: unset !important;
     }
+
+    #slideshow-content-video {
+      padding: unset !important;
+    }
+
+    #slideshow-content-controls {
+      padding: 5px;
+    }
+  }
+</style>
+
+<style>
+  /* iframe global width */
+  iframe {
+    width: 100% !important;
   }
 </style>
