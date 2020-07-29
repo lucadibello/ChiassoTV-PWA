@@ -17,52 +17,47 @@ Vue.use(VueMeta, {
 const routes = [
   {
     path: '/',
-    component: () => import(/* webpackChunkName: "public" */ '@/views/Base'),
+    component: () => import('@/views/Base'),
     children: [
       {
         path: '/',
         name: 'Homepage',
-        component: () => import(/* webpackChunkName: "public" */ '@/views/public/Home'),
+        component: () => import('@/views/public/Home'),
         meta: {
-          title: 'ChiassoTV - la web tv Ticinese',
           admin: false
         },
       },
       {
         path: '/contatti',
         name: 'Contatti',
-        component: () => import(/* webpackChunkName: "public" */ '@/views/public/Contatti'),
+        component: () => import('@/views/public/Contatti'),
         meta: {
-          title: 'ChiassoTV - Contatti',
           admin: false
         },
       },
       {
         path: '/serie',
         name: 'Serie',
-        component: () => import(/* webpackChunkName: "public" */ '@/views/public/Serie'),
+        component: () => import('@/views/public/Serie'),
         meta: {
-          title: 'ChiassoTV - Serie',
           admin: false
         },
       },
       {
         path: '/serie/:name',
         name: 'Episodi',
-        component: () => import(/* webpackChunkName: "public" */ '@/views/public/Episodi'),
+        component: () => import('@/views/public/Episodi'),
         props: true,
         meta: {
-          title: 'ChiassoTV - Episodi',
           admin: false
         },
       },
       {
         path: '/serie/:name/:episode',
         name: 'Player',
-        component: () => import(/* webpackChunkName: "player" */ '@/views/public/Player'),
+        component: () => import('@/views/public/Player'),
         props: true,
         meta: {
-          title: 'ChiassoTV - WIP',
           admin: false
         },
       }
@@ -70,7 +65,7 @@ const routes = [
   },
   {
     path: '/admin',
-    component: () => import(/* webpackChunkName: "admin-panel" */ '@/views/Admin'),
+    component: () => import('@/views/Admin'),
     meta: {
       breadcrumb: 'Panello Admin',
       admin: true
@@ -83,18 +78,16 @@ const routes = [
       {
         path: 'login',
         name: 'Login',
-        component: () => import(/* webpackChunkName: "admin-panel" */ '../views/admin/Login'),
+        component: () => import('../views/admin/Login'),
         meta: {
-          title: 'ChiassoTV - Login',
           admin: false
         }
       },
       {
         path: 'utenti',
         name: 'Gestione utenti',
-        component: () => import(/* webpackChunkName: "admin-panel-extra" */ '../views/admin/UserManagement'),
+        component: () => import('../views/admin/UserManagement'),
         meta: {
-          title: 'ChiassoTV - Gestione utenti',
           breadcrumb: 'Gestione utenti',
           admin: true
         }
@@ -102,9 +95,8 @@ const routes = [
       {
         path: 'serie',
         name: 'Gestione serie',
-        component: () => import(/* webpackChunkName: "admin-panel" */ '../views/admin/SeriesManagement'),
+        component: () => import('../views/admin/SeriesManagement'),
         meta: {
-          title: 'ChiassoTV - Gestione serie',
           breadcrumb: 'Gestione serie',
           admin: true
         }
@@ -112,10 +104,9 @@ const routes = [
       {
         path: 'serie/:name',
         name: 'Gestione episodi',
-        component: () => import(/* webpackChunkName: "admin-panel" */ '../views/admin/EpisodesManagement'),
+        component: () => import('../views/admin/EpisodesManagement'),
         props: true,
         meta: {
-          title: 'ChiassoTV - Gestione episodi',
           breadcrumb: 'Gestione episodi',
           admin: true
         }
@@ -123,10 +114,9 @@ const routes = [
       {
         path: 'home',
         name: 'Gestione homepage',
-        component: () => import(/* webpackChunkName: "admin-panel" */ '../views/admin/HomepageManagement'),
+        component: () => import('../views/admin/HomepageManagement'),
         props: true,
         meta: {
-          title: 'ChiassoTV - Gestione homepage',
           breadcrumb: 'Gestione homepage',
           admin: true
         }
@@ -136,18 +126,12 @@ const routes = [
   {
     path: '*',
     name: '404 Not Found',
-    component: () => import(/* webpackChunkName: "error-404" */ '../views/errors/404'),
-    meta: {
-      title: 'ChiassoTV - Pagina non trovata'
-    }
+    component: () => import('../views/errors/404'),
   },
   {
     path: '/404',
     name: '404 Not Found GLOBAL',
-    component: () => import(/* webpackChunkName: "error-404" */ '../views/errors/404'),
-    meta: {
-      title: 'ChiassoTV - Pagina non trovata'
-    }
+    component: () => import('../views/errors/404'),
   }
 ]
 
