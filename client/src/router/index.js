@@ -1,9 +1,18 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+import VueMeta from 'vue-meta'
+
 import AuthenticationService from '@/services/AuthenticationService'
 
-// page components
+// Import Vue router
 Vue.use(VueRouter)
+// Import vue meta data manager
+Vue.use(VueMeta, {
+  keyName: 'metaInfo',
+  attribute: 'data-vue-meta',
+  tagIDKeyName: 'vmid',
+  refreshOnceOnNavigation: true
+})
 
 const routes = [
   {
@@ -150,9 +159,6 @@ const router = new VueRouter({
 
 // Add protected-routes check
 router.beforeEach((to, from, next) => {
-  // Set page title
-  document.title = to.meta.title
-
   // Check for protected route
   if (to.meta.admin && !AuthenticationService.getToken()) {
     // No permission: redirect to login page
