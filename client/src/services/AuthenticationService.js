@@ -6,12 +6,12 @@ export default {
   },
   setToken (token) {
     // Set JWT token to axios
-    localStorage.setItem('token', token)
+    sessionStorage.setItem('token', token)
   },
   getToken () {
-    return localStorage.getItem('token')
+    return sessionStorage.getItem('token')
   },
   removeToken () {
-    localStorage.removeItem('token')
+    sessionStorage.removeItem('token')
   }
 }
