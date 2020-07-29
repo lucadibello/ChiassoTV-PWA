@@ -224,6 +224,13 @@ export default {
   components: {
     Breadcumb
   },
+  metaInfo: {
+    title: 'ChiassoTV - Gestione serie',
+    meta: [
+      { name: 'description', content:  `Gestione delle serie presenti nella piattaforma ChiassoTV`},
+      { property: 'og:title', content: 'ChiassoTV - Gestione serie'},
+    ]
+  },
   data () {
     return {
       items: [],

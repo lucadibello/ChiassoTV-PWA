@@ -11,14 +11,14 @@
             <!-- Video container -->
             <div class="container-fluid" :key="showcase.index">
               <!-- Episode title -->
-                <div class="d-block text-left" >
-                  <h4>{{ showcase.episodes[showcase.index].episode_information.title }}</h4>
-                  <small>{{ showcase.episodes[showcase.index].episode_information.serie }}</small>
+                <div class="d-block text-left" id="slideshow-content-header">
+                  <h2>{{ showcase.episodes[showcase.index].episode_information.title }}</h2>
+                  <!-- <small>{{ showcase.episodes[showcase.index].episode_information.serie }}</small> -->
                 </div>
 
-              <div v-if="showcase.episodes[showcase.index].episode_information.isFromYoutube">
-                <youtube :video-id="this.$youtube.getIdFromURL(showcase.episodes[showcase.index].episode_information.link)" 
-                  :player-vars="{ autoplay: 1, rel: 0, modestbranding: 1}" host="https://www.youtube-nocookie.com"/>
+              <div id="video-core" v-if="showcase.episodes[showcase.index].episode_information.isFromYoutube">
+                  <youtube :video-id="this.$youtube.getIdFromURL(showcase.episodes[showcase.index].episode_information.link)" 
+                    :player-vars="{ autoplay: 1, rel: 0, modestbranding: 1}" host="https://www.youtube-nocookie.com"/>
               </div>
               <div v-else> 
                 <!-- VideoJS -->
@@ -30,34 +30,36 @@
             </div>
           </transition>
 
-
           <!-- Carousel controls -->
           <div class="text-center mt-4" v-if="showcase.episodes.length > 1">
             
             <!-- Video index -->
             <div class="w-100">
               <small>{{showcase.index + 1}} / {{showcase.episodes.length}}</small>
-            </div>
+            </div> 
 
             <!-- Carousel controls -->
-            <b-row id="slideshow-content-controls">
-              <b-col id="slideshow-content-controls-previous">
-                <b-button @click="showcasePrevious" rounded variant="primary" v-bind:disabled="showcase.index <= 0">
-                  <b-icon-arrow-left></b-icon-arrow-left> Video precedente
-                </b-button>
-              </b-col>
-              <b-col id="slideshow-content-controls-next">
-                <b-button @click="showcaseNext" rounded variant="primary" v-bind:disabled="showcase.index >= showcase.episodes.length - 1">
-                  Video successivo <b-icon-arrow-right></b-icon-arrow-right>
-                </b-button>
-              </b-col>
-            </b-row>
+            <div class="w-100">
+              <b-row id="slideshow-content-controls">
+                <b-col id="slideshow-content-controls-previous">
+                  <b-button @click="showcasePrevious" rounded variant="primary" v-bind:disabled="showcase.index <= 0">
+                    <b-icon-arrow-left></b-icon-arrow-left> Video precedente
+                  </b-button>
+                </b-col>
+                <b-col id="slideshow-content-controls-next">
+                  <b-button @click="showcaseNext" rounded variant="primary" v-bind:disabled="showcase.index >= showcase.episodes.length - 1">
+                    Video successivo <b-icon-arrow-right></b-icon-arrow-right>
+                  </b-button>
+                </b-col>
+              </b-row>
+            </div>
+            
           </div>
         </div>
       </div>
     </div>
 
-    <div class='series mb-2'>
+    <div class='series mb-2 w-100'>
       <!-- Series header -->
       <div id="seriesHeader" class="text-white header-violet">
         <h1 class="display-4">Serie</h1>
@@ -75,7 +77,7 @@
                 <b-row>
                   <!-- Series text -->
                   <b-col cols="4" class="series-thumbnail">
-                    <b-img :src="getSerieThumbnail(serie.banner)" fluid rounded></b-img>
+                    <b-img :src="getSerieThumbnail(serie.banner)" :alt="serie.title + ' thumbnail'" fluid rounded></b-img>
                   </b-col>
                   <b-col cols="8">
                     <h1 class="display-4">{{ serie.name }}</h1>
@@ -103,7 +105,7 @@
     </div>
 
     <!-- Film Fair Switzerland -->
-    <div class="ffs-sponsor shadow-lg">
+    <div class="ffs-sponsor">
       <b-row>
         <b-col cols="8">
           <h1 class="text-white">
@@ -111,11 +113,11 @@
           </h1>
         </b-col>
         <b-col cols="4">
-          <b-img :src="require('@/assets/momohill-logo.jpg')" fluid rounded></b-img>
+          <b-img :src="require('@/assets/momohill-logo.webp')" fluid rounded alt="Momohill Film Fair Switzerland logo"></b-img>
         </b-col>
       </b-row>
     </div>
-  </div>
+  </div>  
   <div v-else>
     <OfflinePage></OfflinePage>
   </div>
@@ -138,6 +140,13 @@ export default {
   name: 'Home',
   components: {
     VideoPlayer, FavoriteButton, OfflinePage
+  },
+  metaInfo: {
+    title: "ChiassoTV - la web tv Ticinese",
+    meta: [
+      { name: 'description', content:  'ChiassoTV è una web tv Ticinese che punta a portare contenuti inediti ed originali relativi al territorio del Mendrisiotto.'},
+      { property: 'og:title', content: "ChiassoTV - la web tv Ticinese"},
+    ]
   },
   data () {
     return {
@@ -256,6 +265,7 @@ export default {
 </script>
 
 <style scoped>
+
   .video-player-box {
     height: 50vh;
     width: auto;
@@ -299,6 +309,11 @@ export default {
     background-size: 4px 50px;
   }
 
+  .ffs-sponsor img {
+    max-height: 20vh;
+    width: auto;
+  }
+
   .collapse-jumbotron {
     width: 100%;
   }
@@ -322,7 +337,15 @@ export default {
     animation-duration: 2s;
   }
 
+  #slideshow-content-header {
+    text-align: center !important;
+  }
+
   @media only screen and (max-width: 700px) {
+    #slideshow-content-header {
+      text-align: left;
+    }
+    
     .ffs-sponsor .row {
         text-align: center;
         display: block;
@@ -366,8 +389,16 @@ export default {
 </style>
 
 <style>
-  /* iframe global width */
-  iframe {
-    width: 100% !important;
+
+  @media only screen and (max-width: 700px) {
+    /* iframe global width */
+    iframe {
+      width: 100% !important;
+      height: 100% !important;
+    }
+  }
+
+  #app {
+    overflow-x: hidden !important;
   }
 </style>

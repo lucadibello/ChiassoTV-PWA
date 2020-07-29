@@ -253,6 +253,15 @@ export default {
     YoutubeLogo,
     FilePond
   },
+  metaInfo() {
+    return {
+      title: 'ChiassoTV - Gestione episodi',
+      meta: [
+        { name: 'description', content:  `Gestione degli episodi della serie ${this.serie.title} presenti nella piattaforma ChiassoTV`},
+        { property: 'og:title', content: 'ChiassoTV - Gestione episodi'},
+      ]
+    }
+  },
   data () {
     return {
       // Add form variables

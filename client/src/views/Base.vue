@@ -2,11 +2,11 @@
   <div>
     <!-- Page header -->
     <Header></Header>
-      <!-- Fade transition -->
-      <transition name="fade" mode="out-in">
+      <!-- Fade transition
+      <transition name="fade" mode="out-in">  -->
         <!-- Other pages will be loaded inside the router-vie tag -->
         <router-view></router-view>
-      </transition>
+      <!-- </transition> -->
   </div>
 </template>
 
@@ -21,7 +21,7 @@ export default {
   },
   data() {
     return {
-      isOnline: navigator.onLine
+      isOnline: navigator.onLine || true
     }
   },
   mounted () {
@@ -39,6 +39,7 @@ export default {
 </script>
 
 <style>
+/*
 .fade-enter-active,
 .fade-leave-active {
   transition-duration: 0.1s;
@@ -50,4 +51,5 @@ export default {
 .fade-leave-active {
   opacity: 0
 }
+*/
 </style>

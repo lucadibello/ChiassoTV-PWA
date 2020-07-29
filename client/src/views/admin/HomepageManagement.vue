@@ -139,6 +139,13 @@ import moment from "moment";
 export default {
   name: "HomepageManagement",
   components: { Breadcumb },
+  metaInfo: {
+    title: 'ChiassoTV - Gestione homepage',
+    meta: [
+      { name: 'description', content:  `Gestione degli elementi mostrati nella pagina Home della piattaforma ChiassoTV`},
+      { property: 'og:title', content: 'ChiassoTV - Gestione homepage'},
+    ]
+  },
   data() {
     return {
       add: {

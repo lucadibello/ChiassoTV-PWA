@@ -65,6 +65,13 @@ export default {
       logged: false
     }
   },
+  metaInfo: {
+    title: 'ChiassoTV - Login',
+    meta: [
+      { name: 'description', content:  `Accesso al pannello di amministrazione della piattaforma ChiassoTV`},
+      { property: 'og:title', content: 'ChiassoTV - Gestione Login'},
+    ]
+  },
   methods: {
     async login () {
       AuthenticationService.login({

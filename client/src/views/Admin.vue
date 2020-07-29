@@ -35,7 +35,19 @@
 import AuthenticationService from '@/services/AuthenticationService'
 
 export default {
-  name: 'admin',
+  name: 'Admin',
+  metaInfo: {
+    meta: [
+        { property: 'og:locale', content: "it_CH"},
+        { property: 'og:locale:alternate', content: "it_IT"},
+        { property: 'og:site_name', content: 'ChiassoTV'},
+        { property: 'og:type', content: 'website'},    
+        { name: 'robots', content: 'noindex'} 
+    ],
+    htmlAttrs: {
+      lang: 'it',
+    }
+  },
   methods: {
     logout: function () {
       // Delete token

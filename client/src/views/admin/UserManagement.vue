@@ -135,6 +135,13 @@ export default {
   components: {
     Breadcumb
   },
+  metaInfo: {
+    title: 'ChiassoTV - Gestione utenti',
+    meta: [
+      { name: 'description', content:  `Gestione degli utenti amministratori della piattaforma ChiassoTV`},
+      { property: 'og:title', content: 'ChiassoTV - Gestione utenti'},
+    ]
+  },
   data () {
     return {
       items: [],

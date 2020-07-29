@@ -11,8 +11,8 @@
         <!-- Video -->
         <div class="youtube-embed-video" v-if="episode.isFromYoutube">
           <!-- YouTube embedded -->
-          <youtube :video-id="this.$youtube.getIdFromURL(episode.link)" 
-            :player-vars="{ autoplay: 1, rel: 0, modestbranding: 1}" height="100%" width="100%" host="https://www.youtube-nocookie.com"/>
+            <youtube :video-id="this.$youtube.getIdFromURL(episode.link)" 
+              :player-vars="{ autoplay: 1, rel: 0, modestbranding: 1}" height="100%" width="100%" host="https://www.youtube-nocookie.com"/>
         </div>
         <div v-else>
           <!-- VideoJS with local video -->
@@ -166,6 +166,15 @@ export default {
       moment: moment,
       mimeTypeUtility: mimeType
     };
+  },
+  metaInfo() {
+    return {
+			title: `ChiassoTV - ${this.episode.title}`,
+			meta: [
+				{ name: 'description', content:  `Episodio '${this.episode.title}' della serie ${this.serie.title}`},
+				{ property: 'og:title', content: `ChiassoTV - ${this.episode.title}`},
+			]
+    }
   },
   methods: {
     loadSerie() {

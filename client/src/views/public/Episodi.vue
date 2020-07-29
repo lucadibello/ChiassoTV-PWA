@@ -174,6 +174,15 @@ export default {
 			descriptionMaxWords: 20
 		}
 	},
+	metaInfo() {
+		return {
+			title: "ChiassoTV - " + this.serie.title,
+			meta: [
+				{ name: 'description', content:  `Episodi della serie ${this.serie.title}, ordinati in senso cronologico`},
+				{ property: 'og:title', content: "ChiassoTV - " + this.serie.title},
+			],
+		}
+	},
 	methods: {
 		getEpisodes () {
 			EpisodeService.get(this.$route.params.name).then((episodes) => {

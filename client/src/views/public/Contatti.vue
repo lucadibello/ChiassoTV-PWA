@@ -71,7 +71,14 @@
 <script>
 // Import custom header
 export default {
-  name: 'Contatti'
+  name: 'Contatti',
+  metaInfo: {
+    title: 'ChiassoTV - Contatti',
+    meta: [
+      { name: 'description', content:  'Contatti relativi al servizio ChiassoTV'},
+      { property: 'og:title', content: 'ChiassoTV - Contatti'},
+    ]
+  }
 }
 </script>
 

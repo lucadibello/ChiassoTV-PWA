@@ -9,14 +9,14 @@
 			<div v-if="this.series.length !== 0 || this.favorites.length !== 0">
 				<!-- Favorites series -->
 				<div v-if="this.favorites.length !== 0">
-					<h4 class="text-left">Serie preferite</h4>
+					<h2 class="text-left">Serie preferite</h2>
 					<SeriesGallery :series="favorites" @reload="reloadFavorites"></SeriesGallery>
 					<hr>
 				</div>
 
 				<!-- Normal series -->
 				<div v-if="this.series.length !== 0">
-					<h4 class="text-left">Tutte le serie</h4>
+					<h2 class="text-left">Tutte le serie</h2>
 					<SeriesGallery :series="series" @reload="reloadFavorites"></SeriesGallery>
 				</div>
 			</div>
@@ -47,6 +47,13 @@ export default {
 				series: [],
 				favorites: []
 		}
+  },
+	metaInfo: {
+    title: "ChiassoTV - Serie",
+    meta: [
+        { name: 'description', content:  'Le nostre serie dedicate alla cultura, al territorio e alla gastronomia locale di qualità'},
+        { property: 'og:title', content: "ChiassoTV - Serie"},
+    ],
   },
   methods: {
     async loadSeries() {
