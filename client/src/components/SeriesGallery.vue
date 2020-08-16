@@ -9,10 +9,10 @@
 					<a :href="href" @click="navigate" rel="noreferrer"><b-img  :alt='serie.title + " thumbnail"' :src="buildBannerPath(serie.banner)" rounded="circle" class="serie-thumbnail-round"></b-img></a>
 				</router-link>
 				
-				<h4 class="d-4 mt-3">{{ serie.name }}</h4>
+				<h3 class="d-4 mt-3">{{ serie.name }}</h3>
 				
 				<p class="description-paragraph">
-						{{ serie.description }}
+					{{ serie.description }}
 				</p>
 				<FavoriteButton :serie='serie.encoded' @element-saved='emitReload' @element-removed='emitReload'/>
 			</div>

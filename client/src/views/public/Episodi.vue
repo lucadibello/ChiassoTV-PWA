@@ -106,31 +106,37 @@
 		</div>
 		
 		<!-- Sidebar -->
-		<b-sidebar id="sidebar-footer" aria-label="Sidebar with custom footer" no-header shadow>
+		<b-sidebar id="sidebar-footer" aria-label="Pannello informazioni serie" no-header shadow>
 			<template v-slot:footer="{ hide }">
 				<div class="d-flex bg-dark text-light align-items-center px-3 py-2">
-					<strong class="mr-auto">{{ serie.title }}</strong>
+					<strong class="mr-auto" v-if="loadedSerie">{{ serie.title }}</strong>
 					<b-button size="sm" @click="hide">Chiudi</b-button>
 				</div>
 			</template>
 			<div class="px-3 py-2">
 				<h3>Informazioni serie</h3>
+				
+				<div v-if="loadedSerie">
+					<!-- Series banner -->
+					<div class="w-100">
+						<b-img-lazy 
+							class='mb-2' 
+							v-if="Boolean(serie.banner)" 
+							:src="seriesBase + serie.banner" 
+							fluid thumbnail />
+					</div>
+					
+					<!-- Series information -->
+					<h4>Titolo</h4>
+					<p>{{ serie.title }}</p>
 
-				<!-- Series banner -->
-				<div class="w-100">
-					<b-img-lazy 
-						class='mb-2' 
-						v-if="Boolean(serie.banner)" 
-						:src="seriesBase + serie.banner" 
-						fluid thumbnail />
+					<h4>Descrizione</h4>
+					<p> {{ serie.description }}</p>
+				</div>
+				<div v-else>
+					<h4 class="mt-4 text-danger text-center">C'è stato un problema durante il caricamento delle informazioni relative alla serie. Riprova più tardi.</h4>
 				</div>
 				
-				<!-- Series information -->
-				<h4>Titolo</h4>
-				<p>{{ serie.title }}</p>
-
-				<h4>Descrizione</h4>
-				<p> {{ serie.description }}</p>
 			</div>
 		</b-sidebar>
 	</div>
@@ -152,6 +158,7 @@ export default {
 			// Episodes list
 			episodes: [],
 			loaded: false,
+			loadedSerie: false,
 			// Service variables
 			serie: {
 				title: '',
@@ -188,20 +195,52 @@ export default {
 			EpisodeService.get(this.$route.params.name).then((episodes) => {
 				// Read episodes 
 				this.episodes = episodes.data
+
+				// Set flag
+				this.loaded = true
 			}).catch((err) => {
-				alert(err)
+				if (err.response.data.error.includes('is not a valid serie')) {
+					// Force user to 404 static route
+					this.$router.push('/404')
+				} else {
+					// Show error to the user
+					this.$bvToast.toast(
+						"C'è stato un problema durante il caricamento degli episodi",
+						{
+							title: "Caricamento episodi",
+							variant: "danger",
+							autoHideDelay: 5000,
+							appendToast: true
+						}
+					);
+				}
 			})
 		},
 		loadSerie () {
-      SeriesService.getSerie(this.$route.params.name).then((serie) => {
-        // Save data inside this.serie parameter
-        this.serie.title = serie.data.name
-        this.serie.encoded = serie.data.encoded
-        this.serie.description = serie.data.description
-        this.serie.banner = serie.data.banner
-        this.serie.createdAt = serie.data.createdAt
-      }).catch((err) => {
-        alert(err)
+			SeriesService.getSerie(this.$route.params.name).then((serie) => {
+				// Save data inside this.serie parameter
+				this.serie.title = serie.data.name
+				this.serie.encoded = serie.data.encoded
+				this.serie.description = serie.data.description
+				this.serie.banner = serie.data.banner
+				this.serie.createdAt = serie.data.createdAt
+
+				// Set loaded serie flag to true
+				this.loadedSerie = true
+			}).catch(() => {
+				// Show error to the user
+				this.$bvToast.toast(
+					"C'è stato un problema durante il caricamento delle informazioni della serie",
+					{
+						title: "Caricamento informazioni serie",
+						variant: "danger",
+						autoHideDelay: 5000,
+						appendToast: true
+					}
+				);
+
+				// Set loaded serie flag to false -> show error in sidebar
+				this.loadSerie = false
 			})
 		}, 
 		minify (string) {
@@ -224,8 +263,6 @@ export default {
 		// Read episodes
 		this.loadSerie()
 		this.getEpisodes()
-		// Set flag
-		this.loaded = true
 	}
 }
 </script>

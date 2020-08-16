@@ -4,6 +4,24 @@
   </div>
 </template>
 
+<script>
+export default {
+  metaInfo: {
+    meta: [
+        { property: 'og:locale', content: "it_CH"},
+        { property: 'og:locale:alternate', content: "it_IT"},
+        { property: 'og:title', content: "ChiassoTV - la web tv Ticinese"},
+        { property: 'og:site_name', content: 'ChiassoTV'},
+        { property: 'og:type', content: 'website'},    
+        { name: 'robots', content: 'index,follow'} 
+    ],
+    htmlAttrs: {
+      lang: 'it',
+    }
+  }
+}
+</script>
+
 <style>
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;

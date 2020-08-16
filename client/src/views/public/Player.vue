@@ -1,5 +1,5 @@
 <template>
-  <b-container v-if="this.$parent.isOnline">
+  <b-container fluid="lg" v-if="this.$parent.isOnline">
   <div class="mt-3">
     <!-- List of all the available series -->
     <h1>{{ episode.title }}</h1>
@@ -7,12 +7,12 @@
 
     <div v-if="loaded">
       <!-- Video box -->
-      <div class="w-100 p-5" id="video-container">
+      <div class="w-100" id="video-container">
         <!-- Video -->
-        <div class="youtube-embed-video" v-if="episode.isFromYoutube">
+        <div class="youtube-embed-video embed-responsive embed-responsive-16by9" v-if="episode.isFromYoutube">
           <!-- YouTube embedded -->
-            <youtube :video-id="this.$youtube.getIdFromURL(episode.link)" 
-              :player-vars="{ autoplay: 1, rel: 0, modestbranding: 1}" height="100%" width="100%" host="https://www.youtube-nocookie.com"/>
+            <youtube player-width="100%" player-height='auto' class="embed-responsive-item" :video-id="this.$youtube.getIdFromURL(episode.link)" 
+              :player-vars="{ autoplay: 1, rel: 0, modestbranding: 1}" host="https://www.youtube-nocookie.com"/>
         </div>
         <div v-else>
           <!-- VideoJS with local video -->
@@ -216,12 +216,26 @@ export default {
               type: this.getMimeType(episode.data.link)
             }]
           }
+
+          // Set to loaded flag to 'true'
+          this.loaded = true;
         })
         .catch(err => {
-          // Log error message
-          console.warn(err)
-          // Redirect to 404 page
-          this.$router.push('/404')
+          if (err.response.data.error.includes('does not exist in the specified series')) {
+            // Force user to 404 static route
+            this.$router.push('/404')
+          } else {
+            // Show error message
+            this.$bvToast.toast(
+            "C'è stato un problema durante il caricamento dell'episodio",
+            {
+              title: "Caricamento dati",
+              variant: "danger",
+              autoHideDelay: 5000,
+              appendToast: true
+            }
+            );
+          }
         });
     },
     loadRelatedVideos() {
@@ -258,10 +272,7 @@ export default {
             this.related.done = true
           }
         })
-        .catch(err => {
-          // Log error
-          console.warn(err)
-
+        .catch(() => {
           // Show error message
           this.$bvToast.toast(
             "C'è stato un problema durante il caricamento dei video correlati",
@@ -301,8 +312,6 @@ export default {
   created() {
     // Load episode information
     this.loadEpisode();
-    // Set to loaded flag to 'true'
-    this.loaded = true;
     // Load serie information
     this.loadSerie();
   },
@@ -364,12 +373,4 @@ export default {
       margin-bottom: 2vh;
     }
 	}
-</style>
-
-<style>
-  /* iframe global width */
-  iframe {
-    width: 100% !important;
-    height: 100% !important;
-  }
 </style>

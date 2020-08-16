@@ -5,7 +5,7 @@
                 <div class="col d-table">
                     <div class="text-center d-table-cell align-middle wow slideInDown vh-100">
                         <b-img :src="require('@/assets/404.webp')" alt="404 isometric image"></b-img>
-                        <h1 class="font-weight-bold mb-4 h1-responsive text-dark">Oops!</h1>
+                        <h1 class="font-weight-bold mb-4 h1-responsive text-dark">Ooops! Sembra che ti sei perso!</h1>
                         <h4 class="h4-responsive text-dark">la pagina che stai cercando non esiste su <b>ChiassoTV</b>...</h4>
                         
                         <router-link

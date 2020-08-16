@@ -5,23 +5,31 @@
 			<h1>Serie</h1>
 			<p>Lista di tutte le serie presenti in <b>ChiassoTV</b></p>
 			<hr>
+			
+			<div v-if="loaded">
+				<div v-if="this.series.length !== 0 || this.favorites.length !== 0">
+					<!-- Favorites series -->
+					<div v-if="this.favorites.length !== 0">
+						<h2 class="text-left">Serie preferite</h2>
+						<SeriesGallery :series="favorites" @reload="reloadFavorites"></SeriesGallery>
+						<hr>
+					</div>
 
-			<div v-if="this.series.length !== 0 || this.favorites.length !== 0">
-				<!-- Favorites series -->
-				<div v-if="this.favorites.length !== 0">
-					<h2 class="text-left">Serie preferite</h2>
-					<SeriesGallery :series="favorites" @reload="reloadFavorites"></SeriesGallery>
-					<hr>
+					<!-- Normal series -->
+					<div v-if="this.series.length !== 0">
+						<h2 class="text-left">Tutte le serie</h2>
+						<SeriesGallery :series="series" @reload="reloadFavorites"></SeriesGallery>
+					</div>
 				</div>
-
-				<!-- Normal series -->
-				<div v-if="this.series.length !== 0">
-					<h2 class="text-left">Tutte le serie</h2>
-					<SeriesGallery :series="series" @reload="reloadFavorites"></SeriesGallery>
+				<div v-else>
+					<h4 class="text-danger">Al momento non ci sono serie disponibili</h4>
 				</div>
 			</div>
 			<div v-else>
-				<h4 class="text-danger">Al momento non ci sono serie disponibili</h4>
+				<!-- Loading spinner -->
+				<div class="d-flex justify-content-center mb-3 mt-5">
+					<b-spinner label="Caricamento..."></b-spinner>
+				</div>
 			</div>
 	</div>
 	</b-container>
@@ -45,7 +53,8 @@ export default {
 	data() {
 		return {
 				series: [],
-				favorites: []
+				favorites: [],
+				loaded: false
 		}
   },
 	metaInfo: {
@@ -57,21 +66,32 @@ export default {
   },
   methods: {
     async loadSeries() {
-			SeriesService.get().then((series) => {
-				// Load data using the one fetched from the APIs
-				series.data.forEach(serie => {
-					if (FavoritesHelper.isSeriesFavorite(serie.encoded)) {
-						// Add serie to the favourites list
-						this.favorites.push(serie)
-					} else {
-						// Add serie to the normal list
-						this.series.push(serie)
-					}
-				})
-			}).catch((err) => {
-				// Error
-				alert(err)
+		SeriesService.get().then((series) => {
+			// Load data using the one fetched from the APIs
+			series.data.forEach(serie => {
+				if (FavoritesHelper.isSeriesFavorite(serie.encoded)) {
+					// Add serie to the favourites list
+					this.favorites.push(serie)
+				} else {
+					// Add serie to the normal list
+					this.series.push(serie)
+				}
 			})
+
+			// Set loaded flag to true -> Show page content
+			this.loaded = true
+		}).catch(() => {
+			// Show error to the user
+			this.$bvToast.toast(
+			"C'è stato un problema durante il caricamento delle serie",
+			{
+				title: "Caricamento dati",
+				variant: "danger",
+				autoHideDelay: 5000,
+				appendToast: true
+			}
+			);
+		})
 		},
 		buildBannerPath(filename) {
 			// Build banner path

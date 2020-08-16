@@ -60,6 +60,14 @@ const routes = [
         meta: {
           admin: false
         },
+      },
+      {
+        path: '/condizioni',
+        name: 'TermsOfService',
+        component: () => import('@/views/public/TOS'),
+        meta: {
+          admin: false
+        },
       }
     ]
   },

@@ -1,23 +1,27 @@
-const express = require("express");
-const cors = require("cors");
-const bodyParser = require("body-parser");
-const morgan = require("morgan");
+// Force NODE_ENV variable status (set local variable if set, otherwise production)
+process.env.NODE_ENV = process.env.NODE_ENV === '' ? "development" : "production"
+
+const express = require("express"); // Express App
+const cors = require("cors"); // Set HEADERS for CORS operations
+const bodyParser = require("body-parser"); // Parse HTTP requests to JSON
+const morgan = require("morgan"); // Log HTTP request
+const helmet = require("helmet"); // Enchanced security
+const compression = require("compression"); // Compress routes
 
 // Index.js returns sequelize object
-const {sequelize} = require('./models');
-const config = require('./config/config');
+const {sequelize} = require('./models'); // Load Sequelize DB models
+const config = require('./config/config'); // Load APP config
 
 // Create app object
 const app = express();
 
-// FIXME: https://stackoverflow.com/questions/19336435/restart-node-js-application-when-uncaught-exception-occurs
-
 // Set middlewares
 app.use(bodyParser.json());
 app.use(bodyParser.text());
-
 app.use(morgan("combined"));
-app.use(cors());
+app.use(cors({origin: true}));
+app.use(helmet());
+app.use(compression())
 
 // Set img directories
 app.use('/series', express.static(config.assets.series));
@@ -46,6 +50,23 @@ app.use('/api/homepage', homepage)
 sequelize.sync()
     .then(() => {
         // Start app
-        app.listen(config.port, () => console.log(`Server started at ${config.port}`));
+        if (process.env.NODE_ENV === "development") {
+            app.listen(config.port, () => console.log(`Server started at ${config.port}`));
+        } else {
+            app.listen();
+            console.log(`Server started at RANDOM port`)
+        }
         app.route('/');
+
+        // Output splitter
+        console.log('--------------------------------------------')
+
+        // Print enviroment status
+        if (process.env.NODE_ENV == "production") {
+            console.log('ChiassoTV started in production mode 🏢')
+        } else {
+            console.log('ChiassoTV started in development mode 👨🏻‍💻')
+        }
+        // Output splitter
+        console.log('--------------------------------------------')
     })

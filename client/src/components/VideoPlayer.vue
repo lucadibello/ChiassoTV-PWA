@@ -1,5 +1,5 @@
 <template>
-  <div  v-if="reseted">
+  <div v-if="reseted">
     <video class="video-js" ref="video">
       <track v-for="(crtTrack,index) in trackList"
              :key="index"

@@ -64,7 +64,7 @@
       <div id="seriesHeader" class="text-white header-violet">
         <h1 class="display-4">Serie</h1>
         <!-- Animated button -->
-        <b-button variant="success" pill @click="isCollapsedSerie = !isCollapsedSerie" class="collapseButton mb-2" v-bind:class="{isCollapsed: !this.isCollapsedSerie}">{{ this.isCollapsedSerie ? "Nascondi serie" : 'Mostra serie' }}</b-button>
+        <b-button variant="dark" pill @click="isCollapsedSerie = !isCollapsedSerie" class="collapseButton mb-2" v-bind:class="{isCollapsed: !this.isCollapsedSerie}">{{ this.isCollapsedSerie ? "Nascondi serie" : 'Mostra serie' }}</b-button>
       </div>
 
       <!-- Load last updated series -->
@@ -112,11 +112,14 @@
             Partner officiale di <a href="https://momohill.com/" target="_blank" rel="noreferrer">Momohill Film Fair Switzerland</a>
           </h1>
         </b-col>
-        <b-col cols="4">
+        <b-col cols="4" id="ffs-sponsor-img">
           <b-img :src="require('@/assets/momohill-logo.webp')" fluid rounded alt="Momohill Film Fair Switzerland logo"></b-img>
         </b-col>
       </b-row>
     </div>
+
+    <!-- Footer -->
+    <Footer/>
   </div>  
   <div v-else>
     <OfflinePage></OfflinePage>
@@ -132,6 +135,7 @@ import HomepageService from '@/services/HomepageService'
 import VideoPlayer from '@/components/VideoPlayer'
 import FavoriteButton from '@/components/FavoriteButton'
 import OfflinePage from '@/components/OfflinePage'
+import Footer from '@/components/Footer'
 
 // Import mime-type database library
 import mimeType from 'mime-types'
@@ -139,7 +143,7 @@ import mimeType from 'mime-types'
 export default {
   name: 'Home',
   components: {
-    VideoPlayer, FavoriteButton, OfflinePage
+    VideoPlayer, FavoriteButton, OfflinePage, Footer
   },
   metaInfo: {
     title: "ChiassoTV - la web tv Ticinese",
@@ -274,12 +278,12 @@ export default {
   .ffs-sponsor {
     display: flex;
     width: 100%;
-    background-color: #5252d4;
+    background-color: #023E8A;
     padding: 10px
   }
 
   .header-violet {
-    background-color: #5252d4;
+    background-color: #023E8A;
     width: 100%;
   }
 
@@ -314,6 +318,11 @@ export default {
     width: auto;
   }
 
+  #ffs-sponsor-img {
+    padding-right: 0 !important;
+    text-align: right;
+  }
+
   .collapse-jumbotron {
     width: 100%;
   }
@@ -322,19 +331,11 @@ export default {
     margin-right: 5px;
   }
 
-  /* Collapse button color change animation */
-  @keyframes collapseAnimation {
-    0%   {background-color: red;}
-    25%  {background-color: yellow;}
-    50%  {background-color: blue;}
-    100% {background-color: green;}
-  }
 
   /* Section collapsed */
   .isCollapsed {
-    background-color: red;
-    animation-name: collapseAnimation;
-    animation-duration: 2s;
+    background-color: white;
+    color: black;
   }
 
   #slideshow-content-header {
@@ -354,6 +355,11 @@ export default {
     .ffs-sponsor .row [class*="col-"] {
       width: 100%;
       max-width: 100%;
+    }
+
+    #ffs-sponsor-img {
+      padding-right: 0 !important;
+      text-align: center;
     }
 
     .ffs-sponsor img {

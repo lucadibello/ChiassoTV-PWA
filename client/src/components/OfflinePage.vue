@@ -2,7 +2,7 @@
     <div class="error-container text-center">
         <!-- Icon -->
         <div id="error-image">
-            <b-img :src='require("@/assets/no-internet.png")' alt='Offline icon'></b-img>
+            <b-img :src='require("@/assets/no-internet.webp")' alt='Offline icon'></b-img>
         </div>
         <div id="error-content" class="p-3">
             <h6 class="h-special">Ooops! Sembra che sei offline!</h6>

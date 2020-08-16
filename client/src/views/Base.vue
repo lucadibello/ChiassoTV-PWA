@@ -7,6 +7,7 @@
         <!-- Other pages will be loaded inside the router-vie tag -->
         <router-view></router-view>
       <!-- </transition> -->
+
   </div>
 </template>
 
@@ -38,7 +39,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 /*
 .fade-enter-active,
 .fade-leave-active {

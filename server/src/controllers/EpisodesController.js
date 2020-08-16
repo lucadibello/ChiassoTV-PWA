@@ -106,12 +106,12 @@ const tempThumbnailStorage = multer.diskStorage(
 
 // Multer objects
 const uploadVideo = multer({
-    limits: {fileSize: 1000000, files: 1},
+    limits: { files: 1},
     storage: tempVideoStorage
 }).single('video')
 
 const uploadThumbnail = multer({
-    limits: {fileSize: 1000000, files: 1},
+    limits: { files: 1},
     storage: tempThumbnailStorage
 }).single('thumbnail')
 
