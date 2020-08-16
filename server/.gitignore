@@ -1,0 +1,5 @@
+.DS_Store
+src/config/prod.config.json
+src/node_modules
+src/node_modules/*
+assets/*

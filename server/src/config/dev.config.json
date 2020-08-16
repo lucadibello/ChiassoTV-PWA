@@ -1,0 +1,12 @@
+{
+    "port": 5000,
+    "db": {
+        "database": "chiassotv2",
+        "user": "root",
+        "password": "root",
+        "options": {
+            "dialect": "mysql",
+            "host": "localhost"
+        }
+    }
+}   
