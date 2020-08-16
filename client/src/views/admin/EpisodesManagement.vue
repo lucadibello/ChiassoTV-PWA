@@ -319,12 +319,12 @@ export default {
         url: process.env.VUE_APP_SERVER_URL + 'api/episodes/' + this.$route.params.name + '/upload',
         process: {
           headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
+            'Authorization': `Bearer ${sessionStorage.getItem('token')}`
           }
         },
         revert: {
           headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
+            'Authorization': `Bearer ${sessionStorage.getItem('token')}`
           }
         }
       },
@@ -332,7 +332,7 @@ export default {
         url: process.env.VUE_APP_SERVER_URL + 'api/episodes/' + this.$route.params.name + '/thumbnail',
         process: {
           headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
+            'Authorization': `Bearer ${sessionStorage.getItem('token')}`
           },
           ondata: (formData) => {
             // Add episode title to request
@@ -342,7 +342,7 @@ export default {
         },
         revert: {
           headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
+            'Authorization': `Bearer ${sessionStorage.getItem('token')}`
           },
           ondata: (formData) => {
             // Add episode title to request
