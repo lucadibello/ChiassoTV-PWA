@@ -1,6 +1,6 @@
 
 const {User, Serie} = require('../models')
-const bcrypt = require('bcrypta')
+const bcrypt = require('bcrypt')
 
 module.exports = {
     get (req, res) {

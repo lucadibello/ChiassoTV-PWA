@@ -19,7 +19,7 @@ const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.text());
 app.use(morgan("combined"));
-app.use(cors({origin: true}));
+app.use(cors());
 app.use(helmet());
 app.use(compression())
 
