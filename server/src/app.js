@@ -50,12 +50,7 @@ app.use('/api/homepage', homepage)
 sequelize.sync()
     .then(() => {
         // Start app
-        if (process.env.NODE_ENV === "development") {
-            app.listen(config.port, () => console.log(`Server started at ${config.port}`));
-        } else {
-            app.listen();
-            console.log(`Server started at RANDOM port`)
-        }
+        app.listen(config.port, () => console.log(`Server started at ${config.port}`));
         app.route('/');
 
         // Output splitter
