@@ -233,7 +233,7 @@
 import EpisodeService from '@/services/EpisodeService'
 import SeriesService from '@/services/SeriesService'
 import YoutubeLogo from '@/components/YoutubeLogo'
-import moment from 'moment'
+import moment from 'moment/src/moment'
 
 // Import Vue FilePond
 import VueFilePond from 'vue-filepond';

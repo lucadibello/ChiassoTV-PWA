@@ -7,6 +7,14 @@ module.exports = {
       display: "standalone",
       background_color: "#000000",
       theme_color: "#4DBA87",
+      configureWebpack:{
+        optimization: {
+          splitChunks: {
+            minSize: 10000,
+            maxSize: 250000,
+          }
+        }
+      },
       icons: [
         {
             src: "./img/icons/android-chrome-192x192.png",

@@ -215,7 +215,7 @@
 
 <script>
 import Breadcumb from '@/components/Breadcumb'
-import moment from 'moment'
+import moment from 'moment/src/moment'
 import SeriesService from '@/services/SeriesService'
 import BannerService from '@/services/BannerService'
 

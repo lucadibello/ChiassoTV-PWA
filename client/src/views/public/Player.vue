@@ -23,7 +23,7 @@
         </div>
 
         <!-- Info box -->
-        <b-tabs content-class="mt-3" class="mt-3 text-left">
+        <b-tabs content-class="mt-3 mb-3" class="mt-3 text-left">
 
           <!-- Description -->
           <b-tab title="Descrizione" active>
@@ -121,7 +121,7 @@ import videoPlayer from '@/components/VideoPlayer'
 import OfflinePage from '@/components/OfflinePage'
 // Import libraries
 import mimeType from 'mime-types'
-import moment from 'moment'
+import moment from 'moment/src/moment'
 
 export default {
   name: "EpisodeViewer",

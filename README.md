@@ -24,7 +24,7 @@ The front-end interacts with the server-side of the application using a series o
 > Sequelize is a promise-based Node.js ORM for Postgres, MySQL, MariaDB, SQLite and Microsoft SQL Server. It features solid transaction support, relations, eager and lazy loading, read replication and more.
 > - https://sequelize.org/
 
-To interact with cerain REST APIs it's needed a JWT Token (send as Authorization header). This token is crypted using a RSA 256 key pair (the RSA keypair saved in this repository is just a sample). 
+To interact with certain REST APIs it's needed a JWT Token (send as Authorization header). This token is crypted using a RSA 256 key pair (the RSA keypair saved in this repository is just a sample). 
 
 > JSON Web Token is an Internet standard for creating data with optional signature and/or optional encryption whose payload holds JSON that asserts some number of claims. The tokens are signed either using a private secret or a public/private key. 
 > https://en.wikipedia.org/wiki/JSON_Web_Token
