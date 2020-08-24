@@ -3,8 +3,8 @@ FROM keymetrics/pm2:latest-alpine
 WORKDIR /server
 
 # Bundle APP files
-COPY server/src/ src/
-COPY server/package.json .
+COPY src/ src/
+COPY package.json .
 COPY ecosystem.config.js .
 
 # Set environment variables
