@@ -1,5 +1,9 @@
 FROM keymetrics/pm2:latest-alpine
 
+# Create directory structure
+RUN mkdir server/
+RUN mkdir server/src
+
 # Bundle APP files
 COPY src server/src/ server/src/
 COPY server/package.json server/
