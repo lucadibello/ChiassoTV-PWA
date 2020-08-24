@@ -1,0 +1,19 @@
+version: '3'
+services:
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    image: "chiassotv-server:1.0"
+    container_name: chiassotv-server
+    depends_on:
+      - db
+    ports:
+      - "5000:5000"
+    environment:
+      NODE_ENV: production
+  db:
+    image: "mysql/mysql-server:latest"
+    container_name: "chiassotv-mysql"
+    ports:
+     - "3306:3306"
