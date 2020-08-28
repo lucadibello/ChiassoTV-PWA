@@ -2,6 +2,9 @@ FROM keymetrics/pm2:latest-alpine
 
 WORKDIR /server
 
+# Expose ports
+EXPOSE 5000
+
 # Bundle APP files
 COPY src/ src/
 COPY package.json .
