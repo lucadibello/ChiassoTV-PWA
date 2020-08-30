@@ -24,52 +24,26 @@
 								<h4 data-v-05c11c53="" class="card-title">{{ episode.title }}</h4>
 								<h6 data-v-05c11c53="" class="card-subtitle text-muted mb-2">{{ 'Episodio n. ' + (episodes.length - index) }}</h6>
 
-							<h1 class="display-5">{{ episode.title }}</h1>
-							<p class="lead">
-								{{ minify(episode.description) }}
-							</p>
+								<b-card-text>
+									{{ minify(episode.description) }}
+								</b-card-text>
+								
+								<b-btn-group>
+									<!-- Favorite button -->
+									<FavoriteButton :serie="serie.encoded" :episode="episode.encoded"/>
 
-							<hr class="my-4">
-
-							<b-button class='mr-3' variant="primary" href="#">Salva nei preferiti (WIP) </b-button>
-
-							<router-link
-								:to="'/serie/' + serie.encoded + '/' + episode.encoded" 
-								v-slot="{ href, navigate}">
-
-								<b-button variant="success" @click='navigate' :href="href">Guarda video</b-button>
-							</router-link>
-							
-							<div class="mb-3"></div>
-						</b-carousel-slide>
-					</div>
-				</b-carousel>
-			</div>
-			<!-- Gallery view -->
-			<div v-else>
-				<b-card-group deck>
-					<div v-for="episode in episodes" :key="episode.encoded" class="gallery-panel">
-						<b-card
-							class="m-2 gallery-card"
-							:title="episode.title"
-							:img-src="getEpisodeThumbnail(episode)"
-							:img-alt="episode.title + ' banner'"
-							img-top
-							tag="article">
-
-							<b-card-text>
-								{{ minify(episode.description) }}
-							</b-card-text>
-
-							<router-link
-								:to="'/serie/' + serie.encoded + '/' + episode.encoded" 
-								v-slot="{ href, navigate}">
-
-								<b-button variant="success" @click='navigate' :href="href">Guarda video</b-button>
-							</router-link>
-						</b-card>
-					</div>
-				</b-card-group>
+									<!-- Watch video -->
+									<router-link	
+											:to="'/serie/' + serie.encoded + '/' + episode.encoded" 
+											v-slot="{ href, navigate}">
+											<b-button variant="success" @click='navigate' :href="href"><b-icon-play-fill></b-icon-play-fill> Guarda video</b-button>
+									</router-link>
+								</b-btn-group>
+							</b-col>
+						</b-row>
+						
+					</b-card>
+				</div>
 			</div>
 		</div>
 		<div v-else>
@@ -135,8 +109,6 @@ export default {
 	},
 	data () {
 		return {
-			// episode view type
-			galleryView: window.innerWidth <= 700,
 			// Series img base
 			seriesBase: process.env.VUE_APP_SERVER_URL + 'series/',
 			// Episodes list
@@ -252,15 +224,9 @@ export default {
 </script>
 
 <style scoped>
-.gallery-card {
-  width: 100%;
-  display: inline-block !important;
-  vertical-align: top;
-}
 
-.gallery-card img {
-	height: 20vh;
-	object-fit: scale-down;
+.card-img-right {
+	max-height: 20vw;
 }
 
 @media only screen and (max-width: 700px) {
@@ -275,20 +241,19 @@ export default {
 	#header-action-container .col {
 		margin-bottom: 2vh;
 	}
-}
-</style>
 
-<style>
-/* Black arrows */
-.carousel-control-prev-icon, .carousel-control-next-icon  {
-	transition: 1s;
-    border-radius: 50% !important;
-	background-color: black;
-    box-shadow: 0 0 0 5px black !important;
-}
+	.episode-card-block .row {
+		display: block;
+	}
 
-.carousel-control-prev-icon:hover, .carousel-control-next-icon:hover {
-	transition: 1s;
-    box-shadow: 0 0 0 6px grey !important;
+	.episode-card-block .col-4 {
+		max-width: unset;
+		width: 100%;
+		display: block;
+	}
+
+	.episode-card-block img {
+		margin-bottom: 2vh;
+	}
 }
 </style>
