@@ -3,7 +3,7 @@ module.exports = {
     pwa: {
       name: 'ChiassoTV - la web tv Ticinese',
       short_name: "ChiassoTV",
-      start_url: '.',
+      start_url: './',
       display: "standalone",
       background_color: "#000000",
       theme_color: "#4DBA87",
