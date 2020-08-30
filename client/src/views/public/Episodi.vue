@@ -134,11 +134,18 @@
 </template>
 
 <script>
+// Import services
 import EpisodeService from '@/services/EpisodeService'
 import SeriesService from '@/services/SeriesService'
 
+// Import components
+import FavoriteButton from '@/components/FavoriteButton'
+
 export default {
 	name: 'Episodi',
+	components: {
+		FavoriteButton
+	},
 	data () {
 		return {
 			// episode view type
@@ -269,31 +276,7 @@ export default {
 	object-fit: scale-down;
 }
 
-.gallery-panel {
-	margin: 4px !important;
-	width: 30%;
-	display: inline-block;
-}
-
-.blurred-image {
-	filter: blur(4px);
-	max-height: 50vh;
-	object-fit: scale-down;
-}
-
 @media only screen and (max-width: 700px) {
-	.gallery-panel {
-		width: 100%;
-	}
-
-	.gallery-panel img {
-		margin-top: 5vh;
-	}
-	
-	#galleryViewButton {
-		display: none;
-	}
-
 	.header-action {
 		width: 100%;
 	}
