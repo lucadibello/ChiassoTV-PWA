@@ -89,7 +89,7 @@ export default {
 
   @media only screen and (max-width: 700px) {
     #contacts div, h3 {
-      text-align: center;
+      text-align: center !important;
     }
 
 		#contacts > div{
