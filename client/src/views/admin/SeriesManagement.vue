@@ -2,21 +2,6 @@
   <b-container>
     <breadcumb></breadcumb>
     <hr>
-    <b-alert
-      :show="dismissCountDown"
-      dismissible
-      :variant="notification"
-      @dismissed="dismissCountDown=0"
-      @dismiss-count-down="countDownChanged">
-
-      <div v-html="message"></div>
-
-      <b-progress
-        :variant="notification"
-        :max="dismissSecs"
-        :value="dismissCountDown"
-        height="4px"/>
-    </b-alert>
 
     <!-- Add users -->
     <div class="d-block text-center mb-3 mt-1">
@@ -68,13 +53,18 @@
               </div>
             </div>
             <div v-else>
-              <small> Seleziona una copertina tramite il menu a tendina </small>
-              <b-form-select v-model='selectedBanner' :options="availableBanners"></b-form-select>
-              <div class="float-right" v-if="Boolean(selectedBanner)">
-                <a 
-                  id='banner-showcase-button' 
-                  @click="triggerBannerShowcase(selectedBanner)">visualizza anteprima copertina..
-                </a>
+              <div v-if="availableBanners.length > 0">
+                <small> Seleziona una copertina tramite il menu a tendina </small>
+                <b-form-select v-model='selectedBanner' :options="availableBanners"></b-form-select>
+                <div class="float-right" v-if="Boolean(selectedBanner)">
+                  <a 
+                    id='banner-showcase-button' 
+                    @click="triggerBannerShowcase(selectedBanner)">visualizza anteprima copertina..
+                  </a>
+                </div>
+              </div>
+              <div v-else>
+                <p class="text-danger font-weight-bold">Non ci sono copertine disponibili all'interno del server</p>
               </div>
             </div>
           </transition>
@@ -255,9 +245,6 @@ export default {
       ],
       notification: 'success',
       message: '',
-      dismissSecs: 5,
-      dismissCountDown: 0,
-      showDismissibleAlert: false,
       isUploading: true,
       selectedBanner: null,
       selectedItem: null,
@@ -286,9 +273,17 @@ export default {
 
         // Got response
         this.items = result.data
-      }).catch((err) => {
-        // Error foun
-        alert(err)
+      }).catch(() => {
+        // Error found
+        this.$bvToast.toast(
+          "C'è stato un errore durante la lettura delle serie",
+          {
+            title: "Lista serie",
+            variant: "danger",
+            autoHideDelay: 5000,
+            appendToast: false
+          }
+        );
       })
     },
     async uploadImage () {
@@ -309,16 +304,16 @@ export default {
         return result.data.file
       }).catch((err) => {
         if (err.response) {
-          // Set alert message
-          this.message = err.response.data.error
-
-          // Set notification type
-          this.notification = 'danger'
-
-          // Show alert
-          this.showAlert()
-        } else {
-          alert(err)
+          // Error found
+          this.$bvToast.toast(
+            err.response.data.error,
+            {
+              title: "Lista serie",
+              variant: "danger",
+              autoHideDelay: 5000,
+              appendToast: false
+            }
+          );
         }
       })
 
@@ -329,22 +324,21 @@ export default {
       BannerService.get().then((result) => {
         // Got response
         this.availableBanners = result.data.banners
-      }).catch((err) => {
+      }).catch(() => {
         // Error found
-        alert(err)
+        this.$bvToast.toast(
+          "C'è stato un errore durante la lettura delle copertine disponibili.",
+          {
+            title: "Copertine disponibili",
+            variant: "danger",
+            autoHideDelay: 5000,
+            appendToast: false
+          }
+        );
       })
     },
     toggleActions (item) {
       this.$set(item, '_showDetails', !item._showDetails)
-    },
-    countDownChanged (dismissCountDown) {
-      this.dismissCountDown = dismissCountDown
-    },
-    showAlert () {
-      this.dismissCountDown = this.dismissSecs
-    },
-    hideAlert () {
-      this.dismissCountDown = 0
     },
     toggleDeleteModal (item) {
       this.selectedItem = item
@@ -388,23 +382,39 @@ export default {
         this.series.description = ''
         this.selectedBanner = null
 
-        // Hide errors
-        this.hideAlert()
-
-        // Show success alert
-        this.message = 'Serie creata correttamente'
-        this.notification = 'success'
-        this.showAlert()
+        // Error found
+        this.$bvToast.toast(
+          `La serie ${data.name} è stata creata con successo.`,
+          {
+            title: "Creazione serie",
+            variant: "success",
+            autoHideDelay: 5000,
+            appendToast: false
+          }
+        );
       }).catch((err) => {
         if (err.response) {
-          // Set message
-          this.message = err.response.data.error
-          // Set notification type
-          this.notification = 'danger'
-          // Show notification
-          this.showAlert()
+          // Error found
+          this.$bvToast.toast(
+            err.response.data.error,
+            {
+              title: "Creazione serie",
+              variant: "danger",
+              autoHideDelay: 5000,
+              appendToast: false
+            }
+          );
         } else {
-          alert(err)
+          // Error found
+          this.$bvToast.toast(
+            "C'è stato un errore durante la creazione della serie",
+            {
+              title: "Creazione serie",
+              variant: "danger",
+              autoHideDelay: 5000,
+              appendToast: false
+            }
+          );
         }
       }).then(() => {
         // Reload table
@@ -414,22 +424,39 @@ export default {
     async deleteSerie () {
       // Send DELETE request to API
       await SeriesService.delete(this.selectedItem.encoded).then(() => {
-        // Delete successfully
-        this.message = 'Serie eliminata con successo'
-        this.notification = 'success'
-        this.showAlert()
+        // Error found
+        this.$bvToast.toast(
+          `La serie ${this.selectedItem.name} è stata eliminata correttamente`,
+          {
+            title: "Eliminazione serie",
+            variant: "success",
+            autoHideDelay: 5000,
+            appendToast: false
+          }
+        );
       }).catch((err) => {
         if (err.response) {
-          // Set alert message
-          this.message = err.response.data.error
-
-          // Set notification type
-          this.notification = 'danger'
-
-          // Show alert
-          this.showAlert()
+          // Error found
+          this.$bvToast.toast(
+            err.response.data.error,
+            {
+              title: "Eliminazione serie",
+              variant: "danger",
+              autoHideDelay: 5000,
+              appendToast: false
+            }
+          );
         } else {
-          alert(err)
+          // Error found
+          this.$bvToast.toast(
+            "C'è stato un errore durante l'eliminazione della serie",
+            {
+              title: "Eliminazione serie",
+              variant: "danger",
+              autoHideDelay: 5000,
+              appendToast: false
+            }
+          );
         }
       }).then(() => {
         // Reload table
@@ -456,19 +483,17 @@ export default {
         this.message = 'Serie modificata con successo'
         this.notification = 'success'
         this.showAlert()
-      }).catch((err) => {
-        if (err.response) {
-          // Set alert message
-          this.message = err.response.data.error
-
-          // Set notification type
-          this.notification = 'danger'
-
-          // Show alert
-          this.showAlert()
-        } else {
-          alert(err)
-        }
+      }).catch(() => {
+          // Error found
+          this.$bvToast.toast(
+            "C'è stato un errore durante la modifica della serie",
+            {
+              title: "Modifica serie",
+              variant: "danger",
+              autoHideDelay: 5000,
+              appendToast: false
+            }
+          );
       }).then(() => {
         // Reload table
         this.fillTable()
