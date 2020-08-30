@@ -12,31 +12,18 @@
 		<div v-if="loaded">
 			<div v-if="episodes.length !== 0">
 			<!-- Single episode view -->
-			<div class="episode" v-if="!galleryView">
-				<b-carousel
-					id="carousel-fade"
-					style="text-shadow: 0px 0px 2px #000"
-					class="mb-5"
-					fade
-					controls
-					img-width="1024"
-					img-height="480"
-				>
-					<!-- Add every episode -->
-					<div v-for="episode in episodes" :key="episode.encoded">
-						<!-- Slide with blank fluid image to maintain slide aspect ratio -->
-						<b-carousel-slide>
-							<!-- Background image -->
-							<template v-slot:img>
-								<img
-									class="d-block img-fluid w-100 blurred-image"
-									width="1024"
-									height="480"
-									:src="getEpisodeThumbnail(episode)"
-									:alt="episode.title + ' alt'"
-								>
-							</template>
-							
+			<div class="episode">
+				<div v-for="(episode, index) in episodes" :key="episode.encoded">
+					<!-- Episode's card -->
+					<b-card class="text-left mb-2 episode-card-block">
+						<b-row>
+							<b-col cols="4">
+								<b-img-lazy fluid style="object-fit:cover;" :src="getEpisodeThumbnail(episode)" :alt="episode.title + '  thumbnail'" blank-src=""></b-img-lazy>
+							</b-col>
+							<b-col>
+								<h4 data-v-05c11c53="" class="card-title">{{ episode.title }}</h4>
+								<h6 data-v-05c11c53="" class="card-subtitle text-muted mb-2">{{ 'Episodio n. ' + (episodes.length - index) }}</h6>
+
 							<h1 class="display-5">{{ episode.title }}</h1>
 							<p class="lead">
 								{{ minify(episode.description) }}
