@@ -429,9 +429,15 @@ export default {
       // Add data
       EpisodeService.add(data, this.serie.encoded, true).then(() => {
         // Episode added -> show notification
-        this.message = `Episodio aggiunto alla serie <b>${this.serie.title}</b> correttamente`
-        this.notification = 'success'
-        this.showAlert()
+        this.$bvToast.toast(
+          `Episodio aggiunto alla serie ${this.serie.title} correttamente`,
+          {
+            title: "Creazione episodi",
+            variant: "success",
+            autoHideDelay: 5000,
+            appendToast: false
+          }
+        );
 
         // Clear form fields
         this.add.title = this.add.description = this.upload.video = ''
@@ -442,12 +448,27 @@ export default {
         this.$refs.pond.removeFile()
       }).catch((err) => {
         if (err.response) {
-          this.message = err.response.data.error
-          this.notification = 'danger'
-          this.showAlert()
+          // Error found
+          this.$bvToast.toast(
+            err.response.data.error,
+            {
+              title: "Creazione episodi",
+              variant: "danger",
+              autoHideDelay: 5000,
+              appendToast: false
+            }
+          );
         } else {
           // Generic error handling
-          alert(err)
+          this.$bvToast.toast(
+            "C'è stato un errore durante la creazione dell'episodio",
+            {
+              title: "Creazione episodi",
+              variant: "danger",
+              autoHideDelay: 5000,
+              appendToast: false
+            }
+          );  
         }
       }).then(() => {
             // Reload table
