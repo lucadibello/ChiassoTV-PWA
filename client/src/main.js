@@ -2,6 +2,7 @@ import Vue from 'vue'
 import App from './App.vue'
 import './registerServiceWorker'
 import router from './router'
+import VueGtag from "vue-gtag";
 
 // Import libraries 
 import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
@@ -21,6 +22,13 @@ Vue.use(IconsPlugin)
 Vue.use(VueSweetalert2)
 // Install Youtube IFrame API
 Vue.use(VueYouTubeEmbed)
+
+// Use Google Analytics
+Vue.use(VueGtag, {
+  config: { id: "UA-159405984-1" },
+  appName: 'ChiassoTV',
+  pageTrackerScreenviewEnabled: true
+}, router);
 
 Vue.config.productionTip = false
 
