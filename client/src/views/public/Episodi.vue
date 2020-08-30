@@ -8,7 +8,7 @@
 		<!-- View type switch -->
 		<b-row align-h="end" id="header-action-container">
 			<b-col>
-				<b-button class='header-action' variant='outline-dark' v-b-toggle.sidebar-footer>Mostra informazioni serie</b-button>
+		<b-button class='header-action' variant='outline-dark' v-b-toggle.sidebar-footer>Mostra informazioni serie</b-button>
 			</b-col>
 			<b-col>
 				<div id="galleryViewButton">
