@@ -54,6 +54,20 @@
               ></b-form-input>
           </b-input-group>
 
+          <div class="text-left mt-5">
+            <h4>Password</h4>
+            <small>La password dell'utente sarà criptata prima di essere salvata all'interno della banca dati</small>
+          </div>
+          
+          <!-- Password -->
+          <b-form-input
+            v-model="add.password"
+            type="password"
+            required
+            placeholder="Password"
+          ></b-form-input>
+
+          <!-- Submit password -->
           <b-button type='submit' class="mt-2" variant="outline-success" block>Aggiungi</b-button>
         </b-form>
     </div>
@@ -74,8 +88,10 @@
         </template>
         <template v-slot:row-details="{ item }">
             <b-card class="text-left">
-              <b-button variant="danger" @click="deleteUser(item)">Elimina</b-button>
-              <b-button id="edit-button" variant="warning" @click="toggleModal(item)">Modifica</b-button>
+              <b-button-group>
+                <b-button variant="danger" @click="deleteUser(item)">Elimina</b-button>
+                <b-button id="edit-button" variant="warning" @click="toggleModal(item)">Modifica</b-button>
+              </b-button-group>
             </b-card>
         </template>
       </b-table>
@@ -164,7 +180,7 @@ export default {
         username: '',
         name: '',
         surname: '',
-        password: 'temp'
+        password: ''
       },
       defaultData: {}
     }
@@ -194,12 +210,6 @@ export default {
       })
     },
     toggleActions (item) {
-      if (item._showDetails) {
-        this.button_text = 'Mostra azioni'
-      } else {
-        this.button_text = 'Nascondi opzioni'
-      }
-
       this.$set(item, '_showDetails', !item._showDetails)
     },
     countDownChanged (dismissCountDown) {
