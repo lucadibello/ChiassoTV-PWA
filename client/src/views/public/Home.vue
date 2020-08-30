@@ -64,7 +64,7 @@
       <div id="seriesHeader" class="text-white header-violet">
         <h1 class="display-4">Serie</h1>
         <!-- Animated button -->
-        <b-button variant="dark" pill @click="isCollapsedSerie = !isCollapsedSerie" class="collapseButton mb-2" v-bind:class="{isCollapsed: !this.isCollapsedSerie}">{{ this.isCollapsedSerie ? "Nascondi serie" : 'Mostra serie' }}</b-button>
+        <b-button variant="primary" pill @click="isCollapsedSerie = !isCollapsedSerie" class="collapseButton mb-2" v-bind:class="{isCollapsed: !this.isCollapsedSerie}">{{ this.isCollapsedSerie ? "Nascondi serie" : 'Mostra serie' }}</b-button>
       </div>
 
       <!-- Load last updated series -->
@@ -177,7 +177,12 @@ export default {
     loadShowcase() {
       // Get all showcase episodes
       HomepageService.get().then(episodes => {
-        this.showcase.episodes = episodes.data
+        if (episodes.data.length > 0) {
+          // Set showcase episodes
+          this.showcase.episodes = episodes.data
+          // Set video source
+          this.setVideoSource();
+        }
       }).catch(() => {
         // Show error message
         this.$bvToast.toast(
