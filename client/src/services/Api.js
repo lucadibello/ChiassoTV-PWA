@@ -18,11 +18,15 @@ axiosInstance.interceptors.request.use(
   },
   error => {
       Promise.reject(error)
-  });
+});
 
-// Add interceptor: https://sweetalert2.github.io/
-axiosInstance.interceptors.response.use(undefined, function (error) {
-  if (403 === error.response.status) {
+// Add a response interceptor
+axiosInstance.interceptors.response.use(function (response) {
+  // Return success responses
+  return response;
+}, function (error) {
+  // Wrong token
+  if (error.response.status == 403) {
     Vue.swal({
       title: "La sessione è scaduta.",
       text: "Per continuare devi eseguire nuovamente il login",
@@ -31,11 +35,12 @@ axiosInstance.interceptors.response.use(undefined, function (error) {
       confirmButtonText: "Okay"
     }).then(() => { 
       // Remove token 
-      localStorage.removeItem('token')
+      sessionStorage.removeItem('token')
       // Redirect to login page
       window.location = '/admin/login'
     })
-  } else if (401 === error.response.status) {
+  } else if (error.response.status == 401) {
+    // Authentication error
     Vue.swal({
       title: "Errore di autenticazione",
       text: "È stato riscontrato un problema durante l'autenticazione con il server. È necessario autenticarsi nuovamente",
@@ -48,9 +53,10 @@ axiosInstance.interceptors.response.use(undefined, function (error) {
       // Redirect to login page
       window.location = '/admin/login'
     })
-  } else {
-    return Promise.reject(error);
   }
+
+  // Return error promise
+  return Promise.reject(error);
 });
 
 // Return axios with interceptors
