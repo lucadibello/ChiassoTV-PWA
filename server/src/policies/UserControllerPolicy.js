@@ -9,7 +9,6 @@ module.exports = {
             username: Joi.string().min(3).max(255)
                 .pattern(new RegExp('^(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._]+(?<![_.])$'))
                 .required(),
-
             password: Joi.string().alphanum().required(),
             name: Joi.string().min(3).max(255).pattern(_info_regex).required(),
             surname: Joi.string().min(3).max(255).pattern(_info_regex).required(),
