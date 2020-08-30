@@ -5,17 +5,7 @@
 		<h1>{{ this.serie.title }}</h1>
 		<p>Episodi della serie <b>{{ this.serie.title }}</b></p>
 
-		<!-- View type switch -->
-		<b-row align-h="end" id="header-action-container">
-			<b-col>
 		<b-button class='header-action' variant='outline-dark' v-b-toggle.sidebar-footer>Mostra informazioni serie</b-button>
-			</b-col>
-			<b-col>
-				<div id="galleryViewButton">
-					<b-form-checkbox class="header-action" v-model="galleryView" switch size="lg">Formato galleria</b-form-checkbox>
-				</div>
-			</b-col>
-		</b-row>
 
 		<hr>
 
