@@ -1,5 +1,5 @@
 // Force NODE_ENV variable status (set local variable if set, otherwise production)
-process.env.NODE_ENV = process.env.NODE_ENV === '' ? "development" : "production"
+process.env.NODE_ENV = process.env.NODE_ENV === '' ? "development" : process.env.NODE_ENV
 
 const express = require("express"); // Express App
 const cors = require("cors"); // Set HEADERS for CORS operations
