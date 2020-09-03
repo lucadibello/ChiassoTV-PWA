@@ -12,5 +12,8 @@ export default {
   },
   delete (seriesName, episodeName) {
     return Api().delete(`episodes/${seriesName}/${episodeName}`)
+  },
+  swapOrder (seriesName, context) {
+    return Api().patch(`episodes/${seriesName}/move`, context)
   }
 }

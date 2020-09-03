@@ -31,5 +31,8 @@ router.delete('/:serie/thumbnail', JwtHelper.authenticateToken, EpisodesControll
 // Delete episode
 router.delete('/:serie/:episode', JwtHelper.authenticateToken, EpisodesController.deleteEpisode)
 
+// Move episodes
+router.patch('/:serie/move', JwtHelper.authenticateToken, EpisodesController.swapVideoOrder)
+
 // Export router
 module.exports = router;

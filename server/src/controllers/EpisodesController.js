@@ -15,6 +15,13 @@ function getFileExtension (filename) {
     return parts[parts.length-1]
 }
 
+async function generateNewVideoPosition () {
+    let order_index = await Episode.max('order_index').then(index => {
+        return Math.max(index) + 1
+    })
+    return order_index;
+}
+ 
 rmDir = function(dirPath, removeSelf) {
     if (removeSelf === undefined)
       removeSelf = true;
@@ -120,7 +127,7 @@ module.exports = {
     get (req, res) {
         Episode.findAll({
             order: [
-                ['createdAt', 'ASC'],
+                ['order_index', 'DESC'],
             ],
             where: {
                 serie: req.params.serie
@@ -254,6 +261,9 @@ module.exports = {
         videoFilename = saveTempFile('episode', videoFilename, req)
         thumbnailFilename = saveTempFile('thumbnail', thumbnailFilename, req)
 
+        // Generate new video order index
+        let videoOrderIndex = await generateNewVideoPosition();
+
         // Save data to DB (isFromYoutube flag set to 'false')
         Episode.create({
             title: req.body.title,
@@ -262,7 +272,8 @@ module.exports = {
             link: videoFilename,
             thumbnail: thumbnailFilename,
             description: req.body.description || null,
-            isFromYoutube: false
+            isFromYoutube: false,
+            order_index: videoOrderIndex
         }).then(function (episode) {
             // Check response
             if (episode) {
@@ -389,5 +400,68 @@ module.exports = {
                 res.status(404).send('Cannot find the episode video')
             }
         })
+    },
+    async swapVideoOrder (req, res) {
+        // Get current video order index
+        let currentEpisode = await Episode.findOne({ where: { encoded: req.body.currentVideo }, attributes: ['order_index'] })
+        
+        let isMovingUp = req.body.direction == 'UP';
+
+        // Check if the index is valid
+        let isIndexValid = false;
+        if (isMovingUp) {
+            isIndexValid = currentEpisode.get().order_index > 0;
+        } else {
+            isIndexValid = currentEpisode.get().order_index < await generateNewVideoPosition();
+        }
+
+        // Check if episode index is valid (not at the bottom, not at the very top depending on the direction selected)
+        if (isIndexValid) {
+            let swapEpisode = await Episode.findOne({ where: { encoded: req.body.swapVideo }, attributes: ['order_index'] })
+            
+            // start transaction
+            let swapTransaction = await sequelize.transaction();
+
+            // Swap the two order_indexes
+            try {
+                // update currentVideo order_index (push down)
+                await Episode.update(
+                    { 
+                        order_index: swapEpisode.get().order_index,
+                    },
+                    { where: { encoded: req.body.currentVideo }
+                }, { transaction: swapTransaction })
+
+                // update swapVideo order_index (push up)
+                await Episode.update(
+                    { 
+                        order_index: currentEpisode.get().order_index,
+                    },
+                    { where: { encoded: req.body.swapVideo }
+                }, { transaction: swapTransaction })
+                
+                // Commit changes
+                await swapTransaction.commit();
+            } catch (error) {
+                // Error found: rollback!
+                transaction.rollback();
+                // send back a generic error message
+                res.status(400).send({message: "There was an error during the swap process.. try again later"})
+            }
+
+            // Send back response
+            res.send({message: "Episodes swapped successfully"})
+        } else {
+
+            if (isMovingUp) {
+                res.status(400).send({error:"The episode is already at the top of the list"})
+            } else {
+                res.status(400).send({error:"The episode is already at the bottom of the list"})
+            }
+        }
+    },
+    moveVideoUp (req, res) {
+        // Send back response
+        res.send("Work in progress...")
     }
 }

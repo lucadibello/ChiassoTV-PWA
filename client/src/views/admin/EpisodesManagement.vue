@@ -162,7 +162,7 @@
 
         <div v-if="episodes.length !== 0">
           <!-- Episodes table -->
-          <b-table id='series-table' class="mt-3" striped hover responsive :items="episodes" :fields="fields">
+          <b-table ref='series_table' class="mt-3" striped hover responsive :items="episodes" :fields="fields">
             <template v-slot:cell(actions)="{ item }">
               <b-btn @click="toggleActions(item)">
                 Mostra azioni
@@ -195,9 +195,20 @@
                     </div>
                   </b-row>
                   <hr>
-                  <b-button-group>
-                    <b-button variant="danger" @click="toggleDeleteModal(item)">Elimina</b-button>
-                  </b-button-group>
+
+                  <b-row>
+                    <b-col>
+                      <!-- Delete button -->
+                      <b-button variant="danger" @click="toggleDeleteModal(item)">Elimina</b-button>
+                    </b-col>
+                    <b-col class="text-right">
+                      <b-btn-group>
+                        <b-button variant="outline-dark" @click="move(item, true)">Sposta su <b-icon-caret-up></b-icon-caret-up></b-button>
+                        <b-button variant="outline-dark" @click="move(item, false)">Sposta giù <b-icon-caret-down></b-icon-caret-down></b-button>
+                      </b-btn-group>
+                    </b-col>
+                  </b-row>
+                  
                 </b-card>
             </template>
           </b-table>
@@ -557,6 +568,109 @@ export default {
       
       // Open modal
       this.$refs['delete-episode'].toggle()
+    },
+    moveUp (item) {
+      console.log(item)
+    },
+    move (item, moveUp=true) {
+      // Get item index
+      let index = this.episodes.findIndex(x => x.encoded === item.encoded);
+
+      // Check indexes
+      let indexValid = false
+
+      if (moveUp) {
+        indexValid = index > 0
+      } else {
+        indexValid = index < this.episodes.length - 1
+      }
+
+      // Check if the episode can be moved (and checks also if findIndex really found a valid index)
+      if (indexValid) {
+
+        const data = {
+          currentVideo: '',
+          swapVideo: '',
+          moveDirection: ''
+        }
+
+        // Build dataset for the swap API
+        if (moveUp) {
+          data.currentVideo = this.episodes[index].encoded,
+          data.swapVideo = this.episodes[index-1].encoded
+          data.moveDirection = 'UP'
+        } else {
+          data.currentVideo = this.episodes[index].encoded,
+          data.swapVideo = this.episodes[index+1].encoded,
+          data.moveDirection = 'DOWN'
+        }
+
+        // Send swap request to API
+        EpisodeService.swapOrder(this.episodes[index].serie, data).then(() => {
+          // Episode moved successfully!!!
+          
+          // Swap episodes position + swap order_index value -> Optimized table update
+          let currentEp = this.episodes[index];
+
+          if (moveUp) {
+            this.episodes[index] = this.episodes[index-1];
+            this.episodes[index-1] = currentEp
+          } else {
+            this.episodes[index] = this.episodes[index+1];
+            this.episodes[index+1] = currentEp
+          }
+
+          // refresh table
+          this.$refs.series_table.refresh();
+        }).catch((err) => {
+          if (err.response) {
+            // Episode can't be moved
+            this.$bvToast.toast(
+              err.response.data.error,
+              {
+                title: "Spostamento episodi",
+                variant: "danger",
+                autoHideDelay: 5000,
+                appendToast: false
+              }
+            );
+          } else {
+            // Episode can't be moved
+            this.$bvToast.toast(
+              "C'è stato un problema sconosciuto durante lo spostamento dell'episodio",
+              {
+                title: "Spostamento episodi",
+                variant: "danger",
+                autoHideDelay: 5000,
+                appendToast: false
+              }
+            );
+          }
+        })
+      } else {
+        // Episode can't be moved
+        if (moveUp) {
+          this.$bvToast.toast(
+            "L'episodio è già il primo della lista",
+            {
+              title: "Spostamento episodi",
+              variant: "danger",
+              autoHideDelay: 5000,
+              appendToast: false
+            }
+          );
+        } else {
+          this.$bvToast.toast(
+            "L'episodio è già l'ultimo della lista",
+            {
+              title: "Spostamento episodi",
+              variant: "danger",
+              autoHideDelay: 5000,
+              appendToast: false
+            }
+          );
+        }
+      }
     }
   },
   created () {
