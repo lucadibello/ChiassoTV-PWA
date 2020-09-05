@@ -375,8 +375,6 @@ export default {
 
         // Set data inside variable
         this.episodes = result.data
-      }).catch((err) => {
-        alert(err)
       })
     },
     loadSerie () {
@@ -416,9 +414,6 @@ export default {
           this.message = err.response.data.error
           this.notification = 'danger'
           this.showAlert()
-        } else {
-          // Generic error handling
-          alert(err)
         }
       }).then(() => {
             // Reload table
