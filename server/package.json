@@ -4,11 +4,11 @@
   "description": "ChiassoTV PWA Server",
   "main": "src/app.js",
   "scripts": {
-    "start": "node src/app.js",
+    "start": "export NODE_ENV=production && node src/app.js",
     "dev": "nodemon --trace-warnings src/app.js"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": ["nodejs", "expressjs", "backend", "REST", "Api", "ChiassoTVa"],
+  "author": "Luca Di Bello",
   "license": "ISC",
   "dependencies": {
     "@hapi/joi": "^17.1.1",
