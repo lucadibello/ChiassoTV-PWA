@@ -120,6 +120,16 @@ const routes = [
         }
       },
       {
+        path: 'pubblicita',
+        name: 'Gestione pubblicita',
+        component: () => import('../views/admin/AdvertisementManagement'),
+        props: true,
+        meta: {
+          breadcrumb: 'Gestione pubblicità',
+          admin: true
+        }
+      },
+      {
         path: 'home',
         name: 'Gestione homepage',
         component: () => import('../views/admin/HomepageManagement'),

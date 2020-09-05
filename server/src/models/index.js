@@ -42,6 +42,10 @@ db[EpisodeModel.name] = EpisodeModel
 const ShowcaseModel = sequelize.import(path.join(__dirname, 'Showcase.js'))
 db[ShowcaseModel.name] = ShowcaseModel
 
+// Load banner model
+const AdvertisementModel = sequelize.import(path.join(__dirname, 'Advertisement.js'))
+db[AdvertisementModel.name] = AdvertisementModel
+
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 

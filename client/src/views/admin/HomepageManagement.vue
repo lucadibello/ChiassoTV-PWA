@@ -81,7 +81,7 @@
 						responsive
 						:items="table.items"
 						:fields="table.fields">
-						
+
 						<template v-slot:cell(actions)="{ item }">
 							<b-btn @click="toggleActions(item)">
 								Mostra azioni
@@ -89,6 +89,16 @@
 						</template>
 						<template v-slot:row-details="{ item }">
 								<b-card class="text-left">
+                  <b-row>
+                    <b-col>
+                      <b-img-lazy :src='getEpisodeThumbnail(item)' thumbnail fluid></b-img-lazy>
+                    </b-col>
+                    <b-col>
+                      <h6>Informazioni aggiuntive</h6>
+                      <p>Ultima modifica: {{ moment(item.updatedAt).format('DD/MM/YYYY HH:mm') }}</p>
+                    </b-col>
+                  </b-row>
+
 									<!-- Button group -->
 									<b-button-group>
 										<b-button variant="danger" @click="toggleDeleteModal(item)">Rimuovi episodio</b-button>
@@ -369,6 +379,10 @@ export default {
 			
 			// Toggle edit modal
       this.$refs['delete-showcase'].toggle()
+    },
+    getEpisodeThumbnail (item) {
+      // Return local thumbnail
+      return process.env.VUE_APP_SERVER_URL + `api/episodes/${item.serie}/${item.episode}/thumbnail`
     },
   },
   mounted() {
