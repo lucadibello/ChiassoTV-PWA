@@ -21,7 +21,7 @@ module.exports = (sequelize, DataTypes) => {
                 model: sequelize.models.Episode,
                 key: 'encoded'
             }
-        },
+        }
     },{
         tableName: 'showcase'
     })
