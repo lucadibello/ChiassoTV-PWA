@@ -14,8 +14,9 @@ let config = {
     },
     assets: {
         series: process.env.ASSETS_SERIES || path.resolve(__dirname, '..', '..', 'assets/series'),
-        hls: process.env.ASSETS_SERIES || path.resolve(__dirname, '..', '..', 'assets/hls'),
-        episodes: process.env.ASSETS_EPISODES || path.resolve(__dirname, '..', '..', 'assets/episodes')
+        hls: process.env.ASSETS_HLS || path.resolve(__dirname, '..', '..', 'assets/hls'),
+        episodes: process.env.ASSETS_EPISODES || path.resolve(__dirname, '..', '..', 'assets/episodes'),
+        ads: process.env.ASSETS_ADS || path.resolve(__dirname, '..', '..', 'assets/ads')
     }
 }
 
