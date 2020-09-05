@@ -1,4 +1,4 @@
-const { Episode } = require('../models')
+const { Episode, sequelize } = require('../models')
 const config = require('../config/config')
 const multer = require('multer')
 const fs = require('fs')
@@ -397,7 +397,7 @@ module.exports = {
                     res.sendFile(path.resolve(config.assets.episodes, req.params.serie, b64EpisodeName, episode.link))
                 }
             } else {
-                res.status(404).send('Cannot find the episode video')
+                res.status(404).send({error:'Cannot find the episode video'})
             }
         })
     },
