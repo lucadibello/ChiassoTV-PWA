@@ -5,8 +5,34 @@
 		<h1>{{ this.serie.title }}</h1>
 		<p>Episodi della serie <b>{{ this.serie.title }}</b></p>
 
+		<!-- Show sideslide -->
 		<b-button class='header-action' variant='outline-dark' v-b-toggle.sidebar-footer>Mostra informazioni serie</b-button>
+		
+		<!-- 
+		<div class="float-right">
+			<b-button class="text-right" :variant="filter.show ? 'outline-primary' : 'primary'" @click="filter.show = !filter.show">Mostra filtri 
+				<b-icon-arrow-bar-down v-if="!filter.show"></b-icon-arrow-bar-down>
+				<b-icon-arrow-bar-up v-else></b-icon-arrow-bar-up>
+			</b-button>
+		</div>
 
+		<transition name="fade">
+			<div v-if="filter.show" class="text-left">
+				<b-form-select v-model="filter.type" :options="[
+					{value: null, text: 'Seleziona un ordinamento'},
+					{value: null, text: 'Ordine alfabetico'},
+					{value: null, text: 'Ordinamento cronologico'}
+				]" size="sm" class="mt-3"></b-form-select>
+
+				<b-form-select v-model="filter.ordering" :options="[
+					{value: null, text: 'Seleziona un ordinamento'},
+					{value: null, text: 'Da'},
+					{value: null, text: 'Per episodio'}
+				]" size="sm" class="mt-3"></b-form-select>
+			</div>
+		</transition>
+		-->
+		
 		<hr>
 
 		<div v-if="loaded">
@@ -132,6 +158,11 @@ export default {
 				width: 600,
 				height: 400,
 				class: 'my-5'
+			},
+			// Filters properties
+			filter: {
+				show: false,
+				type: null
 			},
 			// Description max length
 			descriptionMaxWords: 20
