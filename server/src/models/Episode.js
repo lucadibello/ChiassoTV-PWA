@@ -35,6 +35,11 @@ module.exports = (sequelize, DataTypes) => {
         isFromYoutube: {
             type: DataTypes.BOOLEAN,
             default: false
+        },
+        order_index: {
+            type: DataTypes.DOUBLE,
+            allowNull: false,
+            defaultValue: 1
         }
     },{
         tableName: 'episode'
