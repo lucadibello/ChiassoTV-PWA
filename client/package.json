@@ -27,6 +27,7 @@
     "register-service-worker": "^1.7.1",
     "video.js": "^7.8.4",
     "vue": "^2.6.11",
+    "vue-carousel": "^0.18.0",
     "vue-filepond": "^6.0.2",
     "vue-gtag": "^1.8.0",
     "vue-meta": "^2.4.0",
