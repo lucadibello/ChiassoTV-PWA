@@ -226,15 +226,15 @@ export default {
     return {
       add: {
         /* Social info */
-        client_phoneNumber: '0041765969984',
-        client_name: 'Luca',
-        client_surname: 'Di Bello',
-				client_email: 'info@lucadibello.ch',
+        client_phoneNumber: null,
+        client_name: null,
+        client_surname: null,
+				client_email: null,
 				
         /* Banner related data */
-        website_link: 'https://lucadibello.ch',
-        img: 'prova.jpg',
-        description: 'Ciao ciao ciao',
+        website_link: null,
+        img: null,
+        description: null,
 
         /* Date selection */
         start_date: moment().format('Y-M-D'),
