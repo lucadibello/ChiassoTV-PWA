@@ -17,7 +17,7 @@ module.exports = {
             client_name: Joi.string().min(3).max(255).required(),
             client_surname: Joi.string().min(3).max(255).required(),
             client_phoneNumber: Joi.string().min(10).max(15)
-                .pattern(/^[0-9]+/).required(),
+                .pattern(/^[0-9]+/),
             
             img: Joi.string().required(),
             start_date: Joi.date().raw().required(),
