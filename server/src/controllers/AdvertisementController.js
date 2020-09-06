@@ -148,9 +148,13 @@ module.exports = {
           error: "Cannot fetch ad information, database error",
         });
       } else {
-        // Got banner filename
-        fs.unlinkSync(path.resolve(config.assets.ads, banner.img))
-
+        try {
+          // Got banner filename
+          fs.unlinkSync(path.resolve(config.assets.ads, banner.img))
+        } catch {
+          console.warn(`Can't delete file named '${banner.img}'`)
+        }
+        
         // Remove DB record
         Advertisement.destroy({
           where: {
