@@ -46,9 +46,6 @@ export default {
 }
 </script>
 
-<style>
-
-</style>
 <style scoped>
     .h-special {
         font-size: 2rem;
