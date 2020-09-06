@@ -1,9 +1,15 @@
 <template>
 	<b-container v-if="this.$parent.isOnline">
-	<div class="mt-3">
+	<div class="mt-3 mb-5">
 			<!-- List of all the available series -->
 			<h1>Serie</h1>
 			<p>Lista di tutte le serie presenti in <b>ChiassoTV</b></p>
+			
+			<!-- Ad carousel -->
+			<div class="w-100 mb-3" v-if="this.banners.loaded">
+				<ad-carousel :ads="banners.available"></ad-carousel>
+			</div>
+			
 			<hr>
 			
 			<div v-if="loaded">
@@ -20,6 +26,11 @@
 						<h2 class="text-left">Tutte le serie</h2>
 						<SeriesGallery :series="series" @reload="reloadFavorites"></SeriesGallery>
 					</div>
+
+					<!-- Ad carousel 
+					<div class="w-100 mt-5 mb-3" v-if="this.banners.loaded">
+						<ad-carousel :ads="banners.available"></ad-carousel>
+					</div> -->
 				</div>
 				<div v-else>
 					<h4 class="text-danger">Al momento non ci sono serie disponibili</h4>
@@ -32,6 +43,8 @@
 				</div>
 			</div>
 	</div>
+
+	
 	</b-container>
 	<div v-else>
 		<OfflinePage></OfflinePage>
@@ -41,20 +54,26 @@
 <script>
 // Import Serie service + Img grid
 import SeriesService from '@/services/SeriesService'
+import AdvertisementService from '@/services/AdvertisementService'
 import FavoritesHelper from '@/helpers/FavoritesHelper'
 
 // Import components
 import OfflinePage from '@/components/OfflinePage'
 import SeriesGallery from '@/components/SeriesGallery'
+import AdCarousel from '@/components/AdCarousel'
 
 export default {
 	name: 'Serie',
-	components: { OfflinePage, SeriesGallery },
+	components: { OfflinePage, SeriesGallery, AdCarousel },
 	data() {
 		return {
 				series: [],
 				favorites: [],
-				loaded: false
+				loaded: false,
+				banners: {
+					available: [],
+					loaded: false
+				}
 		}
   },
 	metaInfo: {
@@ -129,10 +148,32 @@ export default {
 				// Add element inside favorites array
 				this.series.push(tempSerie)
 			}
-		}
+		},
+		async loadBanners () {
+      await AdvertisementService.getAvailable().then((result) => {
+        // Loaded correctly
+        this.banners.available = this.$parent.shuffle(result.data)
+      }).catch((err) => {
+				console.log(err)
+        // Error
+        this.$bvToast.toast(
+          err.response ? err.response.data.error : err,
+          {
+            title: "Caricamento pubblicità",
+            variant: "false",
+            autoHideDelay: 5000,
+            appendToast: false
+          }
+        );
+      });
+    }
 	},
-	created() {
+	async mounted() {
 		this.loadSeries()
+
+		// Load banners
+		await this.loadBanners();
+		this.banners.loaded = true;
 	}
 }
 </script>

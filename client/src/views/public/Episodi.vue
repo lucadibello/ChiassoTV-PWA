@@ -35,6 +35,12 @@
 		
 		<hr>
 
+		<!-- Ad carousel -->
+    <div class="w-100 mb-5" v-if="this.banners.loaded">
+      <ad-carousel :ads="banners.available"></ad-carousel>
+    </div>
+
+
 		<div v-if="loaded">
 			<div v-if="episodes.length !== 0">
 			<!-- Single episode view -->
@@ -70,6 +76,11 @@
 						
 					</b-card>
 				</div>
+			</div>
+
+			<!-- Ad carousel -->
+			<div class="w-100 mb-5" v-if="this.banners.loaded">
+				<ad-carousel :ads="banners.available"></ad-carousel>
 			</div>
 		</div>
 		<div v-else>
@@ -124,14 +135,16 @@
 // Import services
 import EpisodeService from '@/services/EpisodeService'
 import SeriesService from '@/services/SeriesService'
+import AdvertisementService from '@/services/AdvertisementService'
 
 // Import components
 import FavoriteButton from '@/components/FavoriteButton'
+import AdCarousel from '@/components/AdCarousel'
 
 export default {
 	name: 'Episodi',
 	components: {
-		FavoriteButton
+		FavoriteButton, AdCarousel
 	},
 	data () {
 		return {
@@ -163,6 +176,10 @@ export default {
 			filter: {
 				show: false,
 				type: null
+			},
+			banners: {
+				available: [],
+				loaded: false
 			},
 			// Description max length
 			descriptionMaxWords: 20
@@ -244,12 +261,33 @@ export default {
 		getEpisodeThumbnail (item) {
 			// Return local thumbnail
 			return process.env.VUE_APP_SERVER_URL + `api/episodes/${this.$route.params.name}/${item.encoded}/thumbnail`
-		}
+		},
+		async loadBanners () {
+      await AdvertisementService.getAvailable().then((result) => {
+        // Loaded correctly
+        this.banners.available = this.$parent.shuffle(result.data)
+      }).catch((err) => {
+				console.log(err)
+        // Error
+        this.$bvToast.toast(
+          err.response ? err.response.data.error : err,
+          {
+            title: "Caricamento pubblicità",
+            variant: "false",
+            autoHideDelay: 5000,
+            appendToast: false
+          }
+        );
+      });
+    }
 	},
-	created () {
+	async created () {
 		// Read episodes
 		this.loadSerie()
 		this.getEpisodes()
+
+		await this.loadBanners();
+		this.banners.loaded = true;
 	}
 }
 </script>

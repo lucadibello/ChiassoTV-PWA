@@ -59,6 +59,11 @@
       </div>
     </div>
 
+    <!-- Ad carousel -->
+    <div class="w-100 mb-3" v-if="this.banners.loaded">
+      <ad-carousel :ads="banners.available"></ad-carousel>
+    </div>
+
     <div class='series mb-2 w-100'>
       <!-- Series header -->
       <div id="seriesHeader" class="text-white header-violet">
@@ -104,6 +109,11 @@
       </div>
     </div>
 
+    <!-- Ad carousel -->
+    <div class="w-100 mb-5" v-if="this.banners.loaded">
+      <ad-carousel :ads="banners.available"></ad-carousel>
+    </div>
+
     <!-- Film Fair Switzerland -->
     <div class="ffs-sponsor">
       <b-row>
@@ -130,12 +140,14 @@
 // Import services
 import SeriesService from '@/services/SeriesService'
 import HomepageService from '@/services/HomepageService'
+import AdvertisementService from '@/services/AdvertisementService'
 
 // Import components
 import VideoPlayer from '@/components/VideoPlayer'
 import FavoriteButton from '@/components/FavoriteButton'
 import OfflinePage from '@/components/OfflinePage'
 import Footer from '@/components/Footer'
+import AdCarousel from '@/components/AdCarousel'
 
 // Import mime-type database library
 import mimeType from 'mime-types'
@@ -143,7 +155,7 @@ import mimeType from 'mime-types'
 export default {
   name: 'Home',
   components: {
-    VideoPlayer, FavoriteButton, OfflinePage, Footer
+    VideoPlayer, FavoriteButton, OfflinePage, Footer, AdCarousel
   },
   metaInfo: {
     title: "ChiassoTV - la web tv Ticinese",
@@ -170,6 +182,11 @@ export default {
         fill: true,
         playbackRates: [0.5, 0.75, 1.0, 1.25, 1.5, 2.0],
         sources: []
+      },
+      // Banner options
+      banners: {
+        available: [],
+        loaded: false
       }
     }
   },
@@ -262,13 +279,34 @@ export default {
     },
     getVideoURL (serie, episode) {
       return process.env.VUE_APP_SERVER_URL + `api/episodes/${serie}/${episode}/episode`
+    },
+    async loadBanners () {
+      await AdvertisementService.getAvailable().then((result) => {
+        // Loaded correctly
+        this.banners.available = this.$parent.shuffle(result.data)
+      }).catch((err) => {
+        // Error
+        this.$bvToast.toast(
+          err.response ? err.response.data.error : err,
+          {
+            title: "Caricamento pubblicità",
+            variant: "false",
+            autoHideDelay: 5000,
+            appendToast: false
+          }
+        );
+      });
     }
   },
-  mounted () {
+  async mounted () {
       // Load showcase
       this.loadShowcase()
       // Load series
       this.loadSeries()
+
+      // Load banners
+      await this.loadBanners();
+      this.banners.loaded = true;
   }
 }
 </script>
@@ -391,6 +429,7 @@ export default {
 
     #slideshow-content-video {
       padding: unset !important;
+      margin-bottom: 3vh;
     }
 
     #slideshow-content-controls {

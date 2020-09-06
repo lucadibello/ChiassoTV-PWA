@@ -5,6 +5,11 @@
     <h1>{{ episode.title }}</h1>
     <hr>
 
+    <!-- Ad carousel -->
+    <div class="w-100 mb-5" v-if="this.banners.loaded">
+      <ad-carousel :ads="banners.available"></ad-carousel>
+    </div>
+
     <div v-if="loaded">
       <!-- Video box -->
       <div class="w-100" id="video-container">
@@ -97,6 +102,10 @@
           </b-tab>
         </b-tabs>
       </div>
+      <!-- Ad carousel -->
+      <div class="w-100 mt-5 mb-5" v-if="this.banners.loaded">
+        <ad-carousel :ads="banners.available"></ad-carousel>
+      </div>
     </div>
     <div v-else>
       <!-- Loading spinner -->
@@ -115,18 +124,21 @@
 // Services
 import EpisodeService from "@/services/EpisodeService";
 import SeriesService from "@/services/SeriesService";
+import AdvertisementService from '@/services/AdvertisementService'
 
 // Video components
 import videoPlayer from '@/components/VideoPlayer'
 import OfflinePage from '@/components/OfflinePage'
+import AdCarousel from '@/components/AdCarousel'
+
 // Import libraries
 import mimeType from 'mime-types'
 import moment from 'moment/src/moment'
 
 export default {
-  name: "EpisodeViewer",
+  name: "Player",
   components: {
-    videoPlayer, OfflinePage
+    videoPlayer, OfflinePage, AdCarousel
   },
   data() {
     return {
@@ -159,6 +171,10 @@ export default {
       related: {
         episodes: [],
         done: false
+      },
+      banners: {
+        available: [],
+        loaded: false
       },
       maxRelatedVideos: 10,
       descriptionMaxWords: 50,
@@ -307,6 +323,23 @@ export default {
     },
     getVideoURL (serie, episode) {
       return process.env.VUE_APP_SERVER_URL + `api/episodes/${serie}/${episode}/episode`
+    },
+    async loadBanners () {
+      await AdvertisementService.getAvailable().then((result) => {
+        // Loaded correctly
+        this.banners.available = this.$parent.shuffle(result.data)
+      }).catch((err) => {
+        // Error
+        this.$bvToast.toast(
+          err.response ? err.response.data.error : err,
+          {
+            title: "Caricamento pubblicità",
+            variant: "false",
+            autoHideDelay: 5000,
+            appendToast: false
+          }
+        );
+      });
     }
   },
   created() {
@@ -314,6 +347,10 @@ export default {
     this.loadEpisode();
     // Load serie information
     this.loadSerie();
+  },
+  async mounted () {
+    await this.loadBanners();
+    this.banners.loaded = true;
   },
   beforeRouteUpdate(to, from, next) {
     // Set load flag to false
