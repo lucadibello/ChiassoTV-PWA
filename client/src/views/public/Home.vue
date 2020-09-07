@@ -17,14 +17,14 @@
                 </div>
 
               <div id="video-core" v-if="showcase.episodes[showcase.index].episode_information.isFromYoutube">
-                  <youtube :video-id="this.$youtube.getIdFromURL(showcase.episodes[showcase.index].episode_information.link)" 
+                  <youtube @ended="showcaseVideoEnded" :video-id="this.$youtube.getIdFromURL(showcase.episodes[showcase.index].episode_information.link)" 
                     :player-vars="{ autoplay: 1, rel: 0, modestbranding: 1}" host="https://www.youtube-nocookie.com"/>
               </div>
               <div v-else> 
                 <!-- VideoJS -->
                 <video-player  class="video-player-box"
                       ref="videoPlayer"
-                      :options="playerOptions">
+                      :options="playerOptions" @ended="showcaseVideoEnded(true)">
                 </video-player>
               </div>
             </div>
@@ -296,6 +296,21 @@ export default {
           }
         );
       });
+    },
+    showcaseVideoEnded (setNewSource=false) {
+      // Check if last video of the carousel
+      if (this.showcase.index == this.showcase.episodes.length - 1) {
+        // Reset index to 0 (restart carousel)
+        this.showcase.index = 0
+
+        // Only for VideoJS (local video streaming)
+        if (setNewSource) {
+          this.setVideoSource();
+        }
+      } else {
+        // Proceed to next video
+        this.showcaseNext();
+      }
     }
   },
   async mounted () {

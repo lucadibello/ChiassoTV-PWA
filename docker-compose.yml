@@ -14,26 +14,33 @@ services:
       NODE_ENV: production
     volumes:
       - data:/mnt/data
+    networks:
+      appnet:
+        aliases:
+          - server
     deploy:
       mode: replicated
       replicas: 2
-      placement:
-        max_replicas_per_node: 1
-      restart_policy:
-        condition: on-failure
   db:
-    image: "mysql/mysql-server:latest"
+    image: "mysql"
     container_name: "chiassotv-mysql"
-    ports:
-     - "3306:3306"
+    networks: 
+      appnet:
+        aliases:
+          - database
     deploy:
       mode: replicated
-      replicas: 2
-      placement:
-        max_replicas_per_node: 1
-      restart_policy:
-        condition: on-failure
+      replicas: 1
+      endpoint_mode: dnsrr
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: root
+      MYSQL_PASSWORD: Chiassotv&1
+      MYSQL_DATABASE: chiassotv
 
 volumes:
   data:
     external: false
+
+networks:
+  appnet:
