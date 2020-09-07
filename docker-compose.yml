@@ -1,4 +1,4 @@
-version: '3'
+version: '3.8'
 services:
   server:
     build:
@@ -12,8 +12,28 @@ services:
       - "5000:5000"
     environment:
       NODE_ENV: production
+    volumes:
+      - data:/mnt/data
+    deploy:
+      mode: replicated
+      replicas: 2
+      placement:
+        max_replicas_per_node: 1
+      restart_policy:
+        condition: on-failure
   db:
     image: "mysql/mysql-server:latest"
     container_name: "chiassotv-mysql"
     ports:
      - "3306:3306"
+    deploy:
+      mode: replicated
+      replicas: 2
+      placement:
+        max_replicas_per_node: 1
+      restart_policy:
+        condition: on-failure
+
+volumes:
+  data:
+    external: false
