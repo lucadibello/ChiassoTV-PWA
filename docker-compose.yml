@@ -24,6 +24,8 @@ services:
   db:
     image: "mysql"
     container_name: "chiassotv-mysql"
+    ports:
+      - "3306:3306"
     networks: 
       appnet:
         aliases:
