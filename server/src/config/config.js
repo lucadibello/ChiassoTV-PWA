@@ -11,14 +11,11 @@ let config = {
         private_key: process.env.JWT_PRIVATE_KEY || fs.readFileSync(path.resolve(__dirname, 'private.pem')),
         public_key: process.env.JWT_PUBLIC_KEY || fs.readFileSync(path.resolve(__dirname, 'public.pem')),
         passphrase: process.env.JWT_PASSPHRASE || 'Chiassotv&1'
-    },
-    assets: {
-        series: process.env.ASSETS_SERIES || path.resolve(__dirname, '..', '..', 'assets/series'),
-        hls: process.env.ASSETS_HLS || path.resolve(__dirname, '..', '..', 'assets/hls'),
-        episodes: process.env.ASSETS_EPISODES || path.resolve(__dirname, '..', '..', 'assets/episodes'),
-        ads: process.env.ASSETS_ADS || path.resolve(__dirname, '..', '..', 'assets/ads')
     }
 }
+
+
+console.log(config)
 
 // Combine configs
 config = Object.assign(config, confidentialConfig)

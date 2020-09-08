@@ -8,5 +8,11 @@
             "dialect": "mysql",
             "host": "localhost"
         }
+    },
+    "assets": {
+        "series": "../../assets/series",
+        "hls": "../../assets/hls",
+        "episodes": "../../assets/episodes",
+        "ads": "../../assets/ads"
     }
 }   
