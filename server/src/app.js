@@ -47,7 +47,7 @@ const homepage = require('./routes/api/homepage')
 app.use('/api/homepage', homepage)
 
 const advertisement = require('./routes/api/advertisement')
-app.use('/api/ads', advertisement)
+app.use('/api/F3334AC9EF26166DEDEBD319A18F9CC7', advertisement)
 
 // Sync database
 sequelize.sync()

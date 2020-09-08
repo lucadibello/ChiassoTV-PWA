@@ -170,7 +170,7 @@ export default {
 			this.$refs.ad_table.refresh();
 		},
 		getAdBanner (item) {
-      return `${process.env.VUE_APP_SERVER_URL}api/ads/${item.id}/banner`
+      return `${process.env.VUE_APP_SERVER_URL}api/F3334AC9EF26166DEDEBD319A18F9CC7/${item.id}/banner`
 		},
 		toggleActions (item) {
       this.$set(item, '_showDetails', !item._showDetails)

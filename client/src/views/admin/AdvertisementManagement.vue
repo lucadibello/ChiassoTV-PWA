@@ -348,7 +348,7 @@ export default {
         ] 
       },
       filePondOptions: {
-        url: process.env.VUE_APP_SERVER_URL + 'api/ads/upload',
+        url: process.env.VUE_APP_SERVER_URL + 'api/F3334AC9EF26166DEDEBD319A18F9CC7/upload',
         process: {
           headers: {
             'Authorization': `Bearer ${sessionStorage.getItem('token')}`
