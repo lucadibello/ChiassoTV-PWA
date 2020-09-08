@@ -16,7 +16,6 @@ services:
       - data:/mnt/data
     networks:
       appnet:
-        ipv4_address: "10.5.0.20"
         aliases:
           - server
     deploy:
@@ -29,7 +28,6 @@ services:
       - "3306:3306"
     networks: 
       appnet:
-        ipv4_address: "10.5.0.10"
         aliases:
           - database
     deploy:
