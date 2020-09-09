@@ -3,8 +3,10 @@ const config = require('../config/config')
 const fs = require('fs')
 
 function encodeFilename (name) {
-    // Re-Format name
-    return name.replace(/\s+/g, '-').toLowerCase()
+    // Get only letters
+    let sanitized = name.replace(/[^a-zA-Z ]+/g, '');
+    // Replace spaces with dash
+    return sanitized.replace(/\s+/g, '-').toLowerCase()
 }
 
 const storage = multer.diskStorage(

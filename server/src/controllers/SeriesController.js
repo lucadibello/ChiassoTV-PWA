@@ -4,8 +4,10 @@ const config = require('../config/config')
 const path = require('path')
 
 function encodeTitle (title) {
-    // Re-Format name
-    return title.replace(/\s+/g, '-').toLowerCase()
+    // Get only letters
+    let sanitized = title.replace(/[^a-zA-Z ]+/g, '');
+    // Replace spaces with dash
+    return sanitized.replace(/\s+/g, '-').toLowerCase()
 }
 
 rmDir = function(dirPath, removeSelf) {
