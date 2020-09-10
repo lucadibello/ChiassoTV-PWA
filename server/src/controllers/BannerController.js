@@ -4,7 +4,7 @@ const fs = require('fs')
 
 function encodeFilename (name) {
     // Get only letters
-    let sanitized = name.replace(/[^a-zA-Z ]+/g, '');
+    let sanitized = name.replace(/[^a-zA-Z1-9 ]+/g, '');
     // Replace spaces with dash
     return sanitized.replace(/\s+/g, '-').toLowerCase()
 }

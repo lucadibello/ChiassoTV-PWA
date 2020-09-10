@@ -7,7 +7,7 @@ const request = require('request')
 
 function encodeTitle (title) {
     // Get only letters
-    let sanitized = title.replace(/[^a-zA-Z ]+/g, '');
+    let sanitized = title.replace(/[^a-zA-Z1-9 ]+/g, '');
     // Replace spaces with dash
     return sanitized.replace(/\s+/g, '-').toLowerCase()
 }
