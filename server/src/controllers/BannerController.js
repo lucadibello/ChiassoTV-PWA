@@ -21,7 +21,7 @@ const storage = multer.diskStorage(
 
 // Create multer object (will handle the upload)
 const upload_file = multer({
-    limits: {fileSize: 1000000, files:1},
+    limits: {fileSize: 2000000, files:1},
     storage: storage
 }).single('banner')
 
