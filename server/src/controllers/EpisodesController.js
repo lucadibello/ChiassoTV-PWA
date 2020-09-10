@@ -245,6 +245,8 @@ module.exports = {
                 res.status(400).send({error: 'Error occurred during the insert process'});
             }
         }).catch((err) => {
+            // Log error in console
+            console.warn(err)
             // Check exception type
             if (err.original.code === 'ER_DUP_ENTRY') {
                 // Duplicate entry found
