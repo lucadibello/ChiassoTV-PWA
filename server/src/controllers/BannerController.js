@@ -30,16 +30,21 @@ module.exports = {
         upload_file (req, res, function (err) {
             if (err instanceof multer.MulterError || err) {
                 // A Multer error occurred when uploading.
+
+                // Log in console error
+                console.warn(err)
+
+                // Send error back
                 res.status(400).send({
                     message: err.message
                 })
+            } else {
+              // Send success response (message + file infos)
+              res.send({
+                  message: 'Image uploaded successfully on the server',
+                  file: req.file
+              })
             }
-            
-            // Send success response (message + file infos)
-            res.send({
-                message: 'Image uploaded successfully on the server',
-                file: req.file
-            })
         })
     },
     get (req, res) {
