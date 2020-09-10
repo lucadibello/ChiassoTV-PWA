@@ -7,9 +7,7 @@ module.exports = {
     create (req, res, next) {
         // Create validation schema
         const schema = Joi.object({
-            name: Joi.string().min(3).max(125)
-                .pattern(new RegExp('^(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._ -]+(?<![_.])$'))
-                .required(),
+            name: Joi.string().min(3).max(125).required(),
             file: Joi.string().required(),
             description: Joi.string()
         });
@@ -39,9 +37,7 @@ module.exports = {
     edit (req, res, next) {
         // Validate using scheme
         const schema = Joi.object({
-            name: Joi.string().min(3).max(255)
-                .pattern(new RegExp('^(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._ -]+(?<![_.])$'))
-                .required(),
+            name: Joi.string().min(3).max(125).required(),
             banner: Joi.string().required(),
             description: Joi.string()
         });
