@@ -45,9 +45,6 @@ module.exports = {
       where: {
         start_date: {
           [Sequelize.Op.gt]: currentDate
-				},
-				end_date: {
-					[Sequelize.Op.gte]: currentDate
 				}
       },
     }).then((result) => {
@@ -89,11 +86,11 @@ module.exports = {
     Advertisement.findAll({
       where: {
         start_date: {
-          [Sequelize.Op.tle]: currentDate
-				},
-				end_date: {
-					[Sequelize.Op.gte]: currentDate
-				}
+          [Sequelize.Op.lte]: currentDate
+        },
+        end_date: {
+          [Sequelize.Op.gte]: currentDate
+        }
       },
     }).then((result) => {
 			if (!result) {
