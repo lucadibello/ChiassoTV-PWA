@@ -1,7 +1,7 @@
 // Require modules
 const express = require('express');
 const JwtHelper = require('../jwt')
-const cors = require(cors)
+const cors = require('cors')
 
 // Get router
 const router = express.Router()
