@@ -1,6 +1,7 @@
 // Require modules
 const express = require('express');
 const JwtHelper = require('../jwt')
+const cors = require(cors)
 
 // Get router
 const router = express.Router()
@@ -20,7 +21,7 @@ router.get('/:serie/:episode/episode', EpisodesControllerPolicy.getEpisode, Epis
 
 // Upload video (video YT, Video Locale & Thumbnail + DB record)
 router.post('/:serie/youtube', JwtHelper.authenticateToken, EpisodesControllerPolicy.addYoutube, EpisodesController.addYoutube)
-router.post('/:serie/local', JwtHelper.authenticateToken, EpisodesControllerPolicy.addLocal, EpisodesController.addLocal)
+router.post('/:serie/local', cors(), JwtHelper.authenticateToken, EpisodesControllerPolicy.addLocal, EpisodesController.addLocal)
 router.post('/:serie/upload', JwtHelper.authenticateToken, EpisodesController.upload)
 router.post('/:serie/thumbnail', JwtHelper.authenticateToken, EpisodesController.uploadThumbnail)
 
