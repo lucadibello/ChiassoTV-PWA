@@ -1,13 +1,24 @@
 // Require modules
 const express = require('express');
 const JwtHelper = require('../jwt')
-const cors = require('cors')
+const multer = require('multer');
 
 // Get router
 const router = express.Router()
 const EpisodesController = require('../../controllers/EpisodesController')
 const EpisodesControllerPolicy = require('../../policies/EpisodesControllerPolicy');
 const { assets } = require('../../config/config');
+
+const upload = multer({ storage: multer.diskStorage({
+
+  destination: function (req, file, cb) {
+    cb(null, '.');
+  },
+
+  filename: function (req, file, cb) {
+    cb(null, file.originalname)
+  }
+})})
 
 // Add JWT Middleware
 // router.use(JwtHelper.authenticateToken)
@@ -21,8 +32,15 @@ router.get('/:serie/:episode/episode', EpisodesControllerPolicy.getEpisode, Epis
 
 // Upload video (video YT, Video Locale & Thumbnail + DB record)
 router.post('/:serie/youtube', JwtHelper.authenticateToken, EpisodesControllerPolicy.addYoutube, EpisodesController.addYoutube)
-router.post('/:serie/local', cors(), JwtHelper.authenticateToken, EpisodesControllerPolicy.addLocal, EpisodesController.addLocal)
-router.post('/:serie/upload', JwtHelper.authenticateToken, EpisodesController.upload)
+router.post('/:serie/local', JwtHelper.authenticateToken, EpisodesControllerPolicy.addLocal, EpisodesController.addLocal)
+// router.post('/:serie/upload',  JwtHelper.authenticateToken, EpisodesController.upload)
+
+// new upload method
+router.post('/:serie/upload', upload.single('video'), JwtHelper.authenticateToken, function (req, res, next) {
+  console.log(req.file, req.body)
+  res.send({message: 'OK'})
+})
+
 router.post('/:serie/thumbnail', JwtHelper.authenticateToken, EpisodesController.uploadThumbnail)
 
 // Undo upload (video + banner)

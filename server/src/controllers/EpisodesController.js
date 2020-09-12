@@ -302,8 +302,9 @@ module.exports = {
     upload (req, res) {
         // Save video to the _tmp directory using multer object
         uploadVideo (req, res, function (err) {
+            console.warn(err)
+
             if (err instanceof multer.MulterError || err) {
-                console.warn(err)
                 
                 // A Multer error occurred when uploading.
                 res.status(400).send({
