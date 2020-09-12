@@ -33,13 +33,7 @@ router.get('/:serie/:episode/episode', EpisodesControllerPolicy.getEpisode, Epis
 // Upload video (video YT, Video Locale & Thumbnail + DB record)
 router.post('/:serie/youtube', JwtHelper.authenticateToken, EpisodesControllerPolicy.addYoutube, EpisodesController.addYoutube)
 router.post('/:serie/local', JwtHelper.authenticateToken, EpisodesControllerPolicy.addLocal, EpisodesController.addLocal)
-// router.post('/:serie/upload',  JwtHelper.authenticateToken, EpisodesController.upload)
-
-// new upload method
-router.post('/:serie/upload', upload.single('video'), JwtHelper.authenticateToken, function (req, res, next) {
-  console.log(req.file, req.body)
-  res.send({message: 'OK'})
-})
+router.post('/:serie/upload',  JwtHelper.authenticateToken, EpisodesController.upload)
 
 router.post('/:serie/thumbnail', JwtHelper.authenticateToken, EpisodesController.uploadThumbnail)
 
