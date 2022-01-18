@@ -1,9 +1,5 @@
 # ChiassoTV.ch - A Swiss cultural web TV
 
-<div style="text-align: center">
-    <img style="height: 200px; width: auto;" src=".readme_assets/logo.png" alt="ChiassoTV logo">
-</div>
-
 # Technologies used
 
 
